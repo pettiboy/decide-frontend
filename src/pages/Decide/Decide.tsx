@@ -90,14 +90,14 @@ export default function Decide() {
                 </Button>
               </div>
 
-              <Button
+              {/* <Button
                 className="text-gray-500"
                 variant="ghost"
                 onClick={() => handleChoice("skip")} // Directly sending "skip"
                 disabled={loading}
               >
                 Skip
-              </Button>
+              </Button> */}
 
               <div className="text-center text-gray-600 text-lg font-medium">
                 {comparison.totalComparisons -
