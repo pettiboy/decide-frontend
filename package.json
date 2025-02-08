@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && firebase deploy --only hosting:decide-pairwise"
   },
   "dependencies": {
     "@radix-ui/react-slider": "^1.2.3",
