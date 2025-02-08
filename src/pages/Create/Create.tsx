@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 import { createDecision } from "@/utils/api";
 import { ArrowRight, Loader2, Plus } from "lucide-react";
 import { useSnackbar } from "notistack";
@@ -11,6 +12,7 @@ export default function Create() {
   const [choices, setChoices] = useState<string[]>([]);
   const [newChoice, setNewChoice] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sliderMultiplier, setSliderMultiplier] = useState(1);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -44,7 +46,7 @@ export default function Create() {
     setLoading(true);
 
     try {
-      const data = await createDecision(choices);
+      const data = await createDecision(choices, sliderMultiplier);
       navigate(`/decide/${data.decisionId}`);
     } catch (error) {
       console.log(error);
@@ -54,10 +56,13 @@ export default function Create() {
     }
   };
 
+  const comparisonCount =
+    ((choices.length * (choices.length - 1)) / 2) * sliderMultiplier;
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <Card className="w-full max-w-lg p-4 sm:p-6 lg:p-8 shadow-lg rounded-2xl bg-white">
-        <CardContent className="flex flex-col space-y-4">
+        <CardContent className="flex flex-col space-y-6">
           {/* Input and Add Button */}
           <div className="flex space-x-2">
             <Input
@@ -116,15 +121,43 @@ export default function Create() {
               </>
             )}
           </Button>
+
+          {/* Slider Section */}
+          <div className="mt-4 border-t border-gray-200 pt-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h4 className="text-lg font-semibold text-gray-800">
+                  Accuracy Multiplier
+                </h4>
+                <p className="text-sm text-gray-600">
+                  Higher value means more accurate response
+                </p>
+              </div>
+              <span className="text-gray-700 font-medium">
+                {sliderMultiplier}
+              </span>
+            </div>
+            <Slider
+              value={[sliderMultiplier]}
+              onValueChange={(value: number[]) => setSliderMultiplier(value[0])}
+              min={1}
+              max={5}
+              step={1}
+              className="mt-3"
+            />
+            <div className="mt-2 text-gray-700 text-lg">
+              Comparisons: {comparisonCount}
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Custom CSS for Animation */}
+      {/* Updated Custom CSS for More Subtle Animation */}
       <style>
         {`
           @keyframes slideIn {
             from {
-              transform: translateY(-10px);
+              transform: translateY(-5px);
               opacity: 0;
             }
             to {
@@ -134,7 +167,7 @@ export default function Create() {
           }
 
           .animate-slide-in {
-            animation: slideIn 0.3s ease-out;
+            animation: slideIn 0.2s ease-out;
           }
         `}
       </style>

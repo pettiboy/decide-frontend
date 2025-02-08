@@ -7,9 +7,12 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-export const createDecision = async (choices: string[]) => {
+export const createDecision = async (choices: string[], multiplier: number) => {
   try {
-    const response = await api.post("/decisions", { choices });
+    const response = await api.post("/decisions", {
+      choices,
+      requiredComparisonsPerPair: multiplier,
+    });
     return response.data;
   } catch (error) {
     console.error("Error creating decision:", error);
