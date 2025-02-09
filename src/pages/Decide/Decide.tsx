@@ -1,3 +1,4 @@
+import Navbar from "@/components/Navbar"; // Importing Navbar Component
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getNextComparison, submitComparison } from "@/utils/api";
@@ -40,7 +41,6 @@ export default function Decide() {
     if (!comparison) return;
     try {
       setLoading(true);
-      console.log(`User chose: ${chosenOption}`);
       await submitComparison(
         id!,
         comparison.choice1.id,
@@ -56,69 +56,71 @@ export default function Decide() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-      <Card className="w-full max-w-xl p-4 sm:p-6 shadow-xl rounded-3xl bg-white">
-        <CardContent className="flex flex-col space-y-6">
-          {/* Heading Section */}
-          <div className="text-center">
-            <h1 className="text-2xl font-bold">This or That?</h1>
-            <p className="text-gray-500 text-md pb-2">
-              Choose the option you prefer. Your choices will help rank all
-              options.
-            </p>
-          </div>
-
-          {comparison ? (
-            <>
-              <div className="space-y-4">
-                <Button
-                  variant="outline"
-                  className="text-lg py-10 rounded-xl w-full"
-                  onClick={() => handleChoice("choice 1")}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <Loader2 className="animate-spin w-6 h-6" />
-                  ) : (
-                    comparison.choice1.text
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="text-lg py-10 rounded-xl w-full"
-                  onClick={() => handleChoice("choice 2")}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <Loader2 className="animate-spin w-6 h-6" />
-                  ) : (
-                    comparison.choice2.text
-                  )}
-                </Button>
-              </div>
-
-              {/* Skip Button (if needed) */}
-              {/* <Button
-                className="text-gray-500"
-                variant="ghost"
-                onClick={() => handleChoice("skip")} 
-                disabled={loading}
-              >
-                Skip
-              </Button> */}
-
-              <div className="text-center text-gray-600 text-lg font-medium">
-                {comparison.totalComparisons -
+    <div className="min-h-screen bg-gray-100">
+      {/* Navbar Component with Progress */}
+      <Navbar
+        title="Decide"
+        progress={
+          comparison
+            ? {
+                current:
+                  comparison.totalComparisons -
                   comparison.comparisonsRemaining +
-                  1}
-                /{comparison.totalComparisons}
-              </div>
-            </>
-          ) : (
-            <div className="text-center text-gray-600">Loading...</div>
-          )}
-        </CardContent>
-      </Card>
+                  1,
+                total: comparison.totalComparisons,
+              }
+            : undefined
+        }
+      />
+
+      {/* Main Content */}
+      <div className="flex items-center justify-center px-4 min-h-[calc(100vh-64px)]">
+        <Card className="w-full max-w-xl p-4 sm:p-6 shadow-xl rounded-3xl bg-white">
+          <CardContent className="flex flex-col space-y-6">
+            {/* Heading Section */}
+            <div className="text-center">
+              <h1 className="text-2xl font-bold">This or That?</h1>
+              <p className="text-gray-500 text-md">
+                Choose the option you prefer. Your choices will help rank all
+                options.
+              </p>
+            </div>
+
+            {comparison ? (
+              <>
+                <div className="space-y-4">
+                  <Button
+                    variant="outline"
+                    className="text-lg py-10 rounded-xl w-full"
+                    onClick={() => handleChoice("choice 1")}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <Loader2 className="animate-spin w-6 h-6" />
+                    ) : (
+                      comparison.choice1.text
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="text-lg py-10 rounded-xl w-full"
+                    onClick={() => handleChoice("choice 2")}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <Loader2 className="animate-spin w-6 h-6" />
+                    ) : (
+                      comparison.choice2.text
+                    )}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center text-gray-600">Loading...</div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

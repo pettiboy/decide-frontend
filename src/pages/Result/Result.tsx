@@ -1,3 +1,4 @@
+import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getResults } from "@/utils/api";
@@ -63,68 +64,71 @@ export default function Result() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-      <Card className="w-full max-w-lg p-4 sm:p-6 lg:p-8 shadow-xl rounded-3xl bg-white">
-        <CardContent className="flex flex-col space-y-6">
-          {/* Your Ranking Heading */}
-          <div className="text-center">
-            <h1 className="text-2xl font-bold">Your Ranking</h1>
-            <p className="text-gray-500 text-md pb-2">
-              Based on your choices, here's how the options ranked.
-            </p>
-          </div>
-
-          {loading ? (
-            <div className="flex justify-center items-center">
-              <Loader2 className="animate-spin w-8 h-8 text-gray-600" />
-            </div>
-          ) : error ? (
-            <p className="text-center text-red-500">{error}</p>
-          ) : (
-            <>
-              <ul className="space-y-2 text-lg">
-                {rankedChoices.map((item) => (
-                  <li
-                    key={item.id}
-                    className="text-gray-700 flex justify-between border-b pb-2"
-                  >
-                    <span className="font-semibold">
-                      {item.rank}. {item.text}
-                    </span>
-                    <span className="text-gray-500">Score: {item.score}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {/* Start Over and Share Buttons */}
-              <div className="flex justify-between space-x-4">
-                <Button
-                  className="bg-black text-white flex items-center space-x-2 px-4 py-2"
-                  onClick={handleRestart}
-                >
-                  <RotateCw className="w-5 h-5" />
-                  <span>Start Over</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex items-center space-x-2 px-4 py-2"
-                  onClick={handleShare}
-                >
-                  <Share2 className="w-5 h-5" />
-                  <span>Share</span>
-                </Button>
-              </div>
-
-              {/* Consensus-based Ranking Info */}
-              <p className="text-gray-500 text-sm text-center mt-4">
-                This ranking was generated using a consensus-based algorithm. It
-                reflects the overall preferences based on your individual
-                choices.
+    <>
+      <Navbar />
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+        <Card className="w-full max-w-lg p-4 sm:p-6 lg:p-8 shadow-xl rounded-3xl bg-white">
+          <CardContent className="flex flex-col space-y-6">
+            {/* Your Ranking Heading */}
+            <div className="text-center">
+              <h1 className="text-2xl font-bold">Your Ranking</h1>
+              <p className="text-gray-500 text-md pb-2">
+                Based on your choices, here's how the options ranked.
               </p>
-            </>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+            </div>
+
+            {loading ? (
+              <div className="flex justify-center items-center">
+                <Loader2 className="animate-spin w-8 h-8 text-gray-600" />
+              </div>
+            ) : error ? (
+              <p className="text-center text-red-500">{error}</p>
+            ) : (
+              <>
+                <ul className="space-y-2 text-lg">
+                  {rankedChoices.map((item) => (
+                    <li
+                      key={item.id}
+                      className="text-gray-700 flex justify-between border-b pb-2"
+                    >
+                      <span className="font-semibold">
+                        {item.rank}. {item.text}
+                      </span>
+                      <span className="text-gray-500">Score: {item.score}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Start Over and Share Buttons */}
+                <div className="flex justify-between space-x-4">
+                  <Button
+                    className="bg-black text-white flex items-center space-x-2 px-4 py-2"
+                    onClick={handleRestart}
+                  >
+                    <RotateCw className="w-5 h-5" />
+                    <span>Start Over</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex items-center space-x-2 px-4 py-2"
+                    onClick={handleShare}
+                  >
+                    <Share2 className="w-5 h-5" />
+                    <span>Share</span>
+                  </Button>
+                </div>
+
+                {/* Consensus-based Ranking Info */}
+                <p className="text-gray-500 text-sm text-center mt-4">
+                  This ranking was generated using a consensus-based algorithm.
+                  It reflects the overall preferences based on your individual
+                  choices.
+                </p>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 }
