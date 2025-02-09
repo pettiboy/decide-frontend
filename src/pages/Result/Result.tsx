@@ -95,7 +95,9 @@ export default function Result() {
                       <span className="font-semibold">
                         {item.rank}. {item.text}
                       </span>
-                      <span className="text-gray-500">Score: {item.score}</span>
+                      <span className="text-gray-500">
+                        Score: {item.score.toFixed(2)}
+                      </span>
                     </li>
                   ))}
                 </ul>
