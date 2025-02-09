@@ -14,7 +14,7 @@ export default function Create() {
   const [choices, setChoices] = useState<string[]>([]);
   const [newChoice, setNewChoice] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sliderMultiplier, setSliderMultiplier] = useState(2);
+  const [sliderMultiplier, setSliderMultiplier] = useState(1);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const inputRef = useRef<HTMLInputElement>(null);
