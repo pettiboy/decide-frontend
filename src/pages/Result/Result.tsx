@@ -44,10 +44,21 @@ export default function Result() {
   const handleShare = async () => {
     try {
       const shareUrl = `${window.location.origin}/result/${id}`;
-      await navigator.clipboard.writeText(shareUrl);
-      enqueueSnackbar("Link copied to clipboard!", { variant: "success" });
+      const shareData = {
+        title: "Decide - Voting Results",
+        text: "Check out my ranked results from Decide!",
+        url: shareUrl,
+      };
+
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        enqueueSnackbar("Link copied to clipboard!", { variant: "success" });
+      }
     } catch (error) {
-      enqueueSnackbar("Failed to copy link.", { variant: "error" });
+      console.error("Error sharing link:", error);
+      enqueueSnackbar("Failed to share the result.", { variant: "error" });
     }
   };
 
@@ -55,7 +66,13 @@ export default function Result() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <Card className="w-full max-w-lg p-4 sm:p-6 lg:p-8 shadow-xl rounded-3xl bg-white">
         <CardContent className="flex flex-col space-y-6">
-          <h1 className="text-2xl font-bold text-center">Results</h1>
+          {/* Your Ranking Heading */}
+          <div className="text-center">
+            <h1 className="text-2xl font-bold">Your Ranking</h1>
+            <p className="text-gray-500 text-md pb-2">
+              Based on your choices, here's how the options ranked.
+            </p>
+          </div>
 
           {loading ? (
             <div className="flex justify-center items-center">
@@ -97,6 +114,13 @@ export default function Result() {
                   <span>Share</span>
                 </Button>
               </div>
+
+              {/* Consensus-based Ranking Info */}
+              <p className="text-gray-500 text-sm text-center mt-4">
+                This ranking was generated using a consensus-based algorithm. It
+                reflects the overall preferences based on your individual
+                choices.
+              </p>
             </>
           )}
         </CardContent>

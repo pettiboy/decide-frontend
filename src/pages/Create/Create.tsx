@@ -61,8 +61,17 @@ export default function Create() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-      <Card className="w-full max-w-lg p-4 sm:p-6 lg:p-8 shadow-lg rounded-2xl bg-white">
+      <Card className="w-full max-w-lg p-4 sm:p-6 shadow-lg rounded-2xl bg-white">
         <CardContent className="flex flex-col space-y-6">
+          {/* Heading Section */}
+          <div className="text-center">
+            <h1 className="text-2xl font-bold">Add Your Options</h1>
+            <p className="text-gray-500 text-md pb-2">
+              Enter the options you want to compare. You'll vote on these in
+              pairs later.
+            </p>
+          </div>
+
           {/* Input and Add Button */}
           <div className="flex space-x-2">
             <Input
@@ -80,7 +89,7 @@ export default function Create() {
 
           {/* Helper Text */}
           {choices.length < 2 && (
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-sm text-center">
               Add at least 2 choices to continue.
             </p>
           )}

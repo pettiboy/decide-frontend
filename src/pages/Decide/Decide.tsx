@@ -40,9 +40,7 @@ export default function Decide() {
     if (!comparison) return;
     try {
       setLoading(true);
-
       console.log(`User chose: ${chosenOption}`);
-
       await submitComparison(
         id!,
         comparison.choice1.id,
@@ -59,8 +57,17 @@ export default function Decide() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-      <Card className="w-full max-w-xl p-4 sm:p-6 lg:p-8 shadow-xl rounded-3xl bg-white">
+      <Card className="w-full max-w-xl p-4 sm:p-6 shadow-xl rounded-3xl bg-white">
         <CardContent className="flex flex-col space-y-6">
+          {/* Heading Section */}
+          <div className="text-center">
+            <h1 className="text-2xl font-bold">This or That?</h1>
+            <p className="text-gray-500 text-md pb-2">
+              Choose the option you prefer. Your choices will help rank all
+              options.
+            </p>
+          </div>
+
           {comparison ? (
             <>
               <div className="space-y-4">
@@ -90,10 +97,11 @@ export default function Decide() {
                 </Button>
               </div>
 
+              {/* Skip Button (if needed) */}
               {/* <Button
                 className="text-gray-500"
                 variant="ghost"
-                onClick={() => handleChoice("skip")} // Directly sending "skip"
+                onClick={() => handleChoice("skip")} 
                 disabled={loading}
               >
                 Skip
