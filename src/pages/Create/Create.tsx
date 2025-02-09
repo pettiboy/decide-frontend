@@ -8,12 +8,13 @@ import { ArrowRight, Loader2, Plus } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Footer from "@/components/Footer";
 
 export default function Create() {
   const [choices, setChoices] = useState<string[]>([]);
   const [newChoice, setNewChoice] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sliderMultiplier, setSliderMultiplier] = useState(1);
+  const [sliderMultiplier, setSliderMultiplier] = useState(2);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -186,6 +187,7 @@ export default function Create() {
         `}
         </style>
       </div>
+      <Footer />
     </>
   );
 }

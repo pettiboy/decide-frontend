@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Hand, ListPlus } from "lucide-react"; // Icons
 import { useNavigate } from "react-router-dom";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-gray-100">
+      <div className="flex flex-col items-center justify-center min-h-screen px-6 bg-gray-100">
         {/* Main Container */}
         <div className="max-w-2xl text-center space-y-8">
           {/* Title */}
@@ -55,6 +56,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 }

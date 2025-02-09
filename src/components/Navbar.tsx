@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface NavbarProps {
   progress?: {
@@ -8,6 +9,8 @@ interface NavbarProps {
 }
 
 const Navbar: FC<NavbarProps> = ({ progress }) => {
+  const navigate = useNavigate();
+
   const progressPercentage = progress
     ? (progress.current / progress.total) * 100
     : 0;
@@ -16,7 +19,14 @@ const Navbar: FC<NavbarProps> = ({ progress }) => {
     <div className="w-full bg-white shadow-md">
       {/* Navbar */}
       <nav className="py-4 px-6 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Decide</h1>
+        <button
+          onClick={() => {
+            navigate("/");
+          }}
+          className="text-xl font-bold"
+        >
+          Decide
+        </button>
         {progress && (
           <span className="text-gray-600 text-lg font-medium">
             Progress: {progress.current}/{progress.total}

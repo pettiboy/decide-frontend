@@ -59,7 +59,6 @@ export default function Decide() {
     <div className="min-h-screen bg-gray-100">
       {/* Navbar Component with Progress */}
       <Navbar
-        title="Decide"
         progress={
           comparison
             ? {

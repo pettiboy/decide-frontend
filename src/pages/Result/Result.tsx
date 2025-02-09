@@ -6,6 +6,7 @@ import { Loader2, RotateCw, Share2 } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Footer from "@/components/Footer";
 
 export default function Result() {
   const { id } = useParams();
@@ -129,6 +130,7 @@ export default function Result() {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </>
   );
 }
