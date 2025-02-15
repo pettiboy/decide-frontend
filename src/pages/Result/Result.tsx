@@ -45,7 +45,7 @@ export default function Result() {
         setError("Results are not available yet.");
       } else {
         setRankedChoices(resultData.rankedChoices);
-        setPollName(resultData.title || "Untitled Decision");
+        setPollName(resultData.decision.title || "Untitled Decision");
         setVoterCount(voterData.numberOfVoters);
       }
     } catch (error) {
@@ -65,7 +65,11 @@ export default function Result() {
     try {
       resultRef.current.style.display = "block";
       const canvas = await html2canvas(resultRef.current, {
-        
+        scale: 5,
+        logging: false,
+        backgroundColor: "#ffffff",
+        width: 1080,
+        height: 1080,
       });
       const blob: BlobPart = await new Promise((resolve, reject) =>
         canvas.toBlob((blob: Blob | null) => {

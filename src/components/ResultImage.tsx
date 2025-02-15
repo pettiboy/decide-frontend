@@ -1,4 +1,5 @@
 import { forwardRef } from "react";
+import { Trophy } from "lucide-react";
 
 interface RankedChoice {
   id: number;
@@ -28,52 +29,156 @@ const ResultImage = forwardRef<HTMLDivElement, ResultImageProps>(
         className="hidden"
         style={{
           width: "1080px",
-          height: "1080px", // 1:1 aspect ratio
-          background: "white",
-          padding: "80px 60px", // Adjusted padding for better layout
+          height: "1080px",
+          background: "linear-gradient(to bottom, #f8fafc, #ffffff)",
+          padding: "60px",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
+          fontFamily: "system-ui, -apple-system, sans-serif",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            {truncateText(pollName, 50)}
-          </h1>
-          <p className="text-lg text-gray-600">
-            {totalVotesCount} {totalVotesCount === 1 ? "voter" : "voters"}{" "}
-            decided
-          </p>
-        </div>
+        {/* Background Pattern */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            opacity: 0.05,
+            background:
+              "repeating-linear-gradient(45deg, #6366f1 0, #6366f1 1px, transparent 0, transparent 50px)",
+            zIndex: 0,
+          }}
+        />
 
-        {/* Results List */}
-        <div className="space-y-4 flex-grow">
-          {rankedChoices.map((item) => (
+        {/* Content Container */}
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {/* Header */}
+          <div style={{ textAlign: "center", marginBottom: "40px" }}>
             <div
-              key={item.id}
-              className="flex items-center gap-4 border-b border-gray-200 pb-4"
+              style={{
+                background: "#EEF2FF",
+                width: "80px",
+                height: "80px",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 24px",
+              }}
             >
-              <span className="text-2xl font-bold text-blue-600">
-                {item.rank}
-              </span>
-              <div className="flex-1">
-                <p className="text-lg text-gray-900">
-                  {truncateText(item.text, 100)}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  Score: {item.score.toFixed(2)}
-                </p>
-              </div>
+              <Trophy
+                style={{ width: "40px", height: "40px", color: "#4F46E5" }}
+              />
             </div>
-          ))}
-        </div>
+            <h1
+              style={{
+                fontSize: "48px",
+                fontWeight: "bold",
+                color: "#1F2937",
+                marginBottom: "16px",
+                lineHeight: 1.2,
+              }}
+            >
+              {truncateText(pollName, 40)}
+            </h1>
+            <p style={{ fontSize: "24px", color: "#6B7280" }}>
+              {totalVotesCount} {totalVotesCount === 1 ? "voter" : "voters"}{" "}
+              participated
+            </p>
+          </div>
 
-        {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-xl font-bold text-white px-4 py-2 rounded-full inline-block">
-            decide.somehow.dev
-          </p>
+          {/* Results List */}
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+            }}
+          >
+            {rankedChoices.map((item) => (
+              <div
+                key={item.id}
+                style={{
+                  background: "white",
+                  padding: "24px",
+                  borderRadius: "16px",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "20px",
+                  border: "1px solid rgba(0, 0, 0, 0.05)",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                    color: "#4F46E5",
+                    minWidth: "60px",
+                  }}
+                >
+                  #{item.rank}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      fontSize: "24px",
+                      color: "#1F2937",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {truncateText(item.text, 60)}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "18px",
+                      color: "#6B7280",
+                      marginTop: "4px",
+                    }}
+                  >
+                    Score: {item.score.toFixed(2)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Footer */}
+          <div
+            style={{
+              marginTop: "40px",
+              textAlign: "center",
+              background: "#4F46E5",
+              padding: "12px 32px",
+              borderRadius: "999px",
+              display: "inline-block",
+              alignSelf: "center",
+            }}
+          >
+            <p
+              style={{
+                color: "white",
+                fontSize: "24px",
+                fontWeight: "500",
+                verticalAlign: "center",
+              }}
+            >
+              decide.somehow.dev
+            </p>
+          </div>
         </div>
       </div>
     );
