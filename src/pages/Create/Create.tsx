@@ -38,8 +38,13 @@ export default function Create() {
       enqueueSnackbar("Add at least 2 choices to start!", { variant: "error" });
       return;
     }
-    setLoading(true);
 
+    if (!title) {
+      handleTitleMagic();
+      return;
+    }
+
+    setLoading(true);
     try {
       const data = await createDecision(title, choices, 1);
       navigate(`/decide/${data.decisionId}`);
@@ -60,11 +65,14 @@ export default function Create() {
     }
 
     try {
+      setLoading(true);
       const data = await generateTitle(choices);
       setTitle(data.title);
     } catch (error) {
       console.error(error);
       enqueueSnackbar("Failed to generate title!", { variant: "error" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -158,8 +166,17 @@ export default function Create() {
                   <Loader2 className="animate-spin w-6 h-6" />
                 ) : (
                   <div className="flex items-center justify-center gap-2">
-                    Start Deciding
-                    <ArrowRight className="w-5 h-5" />
+                    {!title ? (
+                      <>
+                        Generate Title with AI
+                        <Sparkles className="w-5 h-5" />
+                      </>
+                    ) : (
+                      <>
+                        Start Deciding
+                        <ArrowRight className="w-5 h-5" />
+                      </>
+                    )}
                   </div>
                 )}
               </Button>
