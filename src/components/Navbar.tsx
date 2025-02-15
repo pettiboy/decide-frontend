@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface NavbarProps {
   progress?: {
@@ -27,6 +28,9 @@ const Navbar: FC<NavbarProps> = ({ progress }) => {
         >
           Decide
         </button>
+        <Link to="/my-decisions" className="text-gray-600 hover:text-gray-900">
+          My Decisions
+        </Link>
         {progress && (
           <span className="text-gray-600 text-lg font-medium">
             Progress: {progress.current}/{progress.total}

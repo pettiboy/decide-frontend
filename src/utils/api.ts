@@ -93,3 +93,17 @@ export const generateTitle = async (choices: string[]) => {
     throw error;
   }
 };
+
+export const getMyDecisions = async (
+  type: "all" | "created" | "voted" = "all"
+) => {
+  try {
+    const response = await api.get(
+      `/my-decisions${type !== "all" ? `?type=${type}` : ""}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching decisions:", error);
+    throw error;
+  }
+};
