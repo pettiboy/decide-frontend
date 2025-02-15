@@ -107,3 +107,13 @@ export const getMyDecisions = async (
     throw error;
   }
 };
+
+export const getVoterCount = async (decisionId: string) => {
+  try {
+    const response = await api.get(`/decisions/${decisionId}/voter-count`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching voter count:", error);
+    throw error;
+  }
+};

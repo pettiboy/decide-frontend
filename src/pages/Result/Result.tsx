@@ -1,15 +1,15 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { getResults } from "@/utils/api";
-import { ExternalLink, Loader2, RotateCw, Share2, Trophy } from "lucide-react";
+import { getResults, getVoterCount } from "@/utils/api";
+import { Loader2, RotateCw, Share2, Trophy } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function Result() {
   const [pollName, setPollName] = useState("...");
-  const [totalVotesCount, setTotalVotesCount] = useState(1);
+  const [voterCount, setVoterCount] = useState(0);
   const { id } = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
@@ -26,13 +26,21 @@ export default function Result() {
   const fetchResults = async () => {
     try {
       setLoading(true);
-      const data = await getResults(id!);
-      if (!data || !data.rankedChoices || data.rankedChoices.length === 0) {
+      const [resultData, voterData] = await Promise.all([
+        getResults(id!),
+        getVoterCount(id!),
+      ]);
+
+      if (
+        !resultData ||
+        !resultData.rankedChoices ||
+        resultData.rankedChoices.length === 0
+      ) {
         setError("Results are not available yet.");
       } else {
-        setRankedChoices(data.rankedChoices);
-        setPollName(data.title || "Untitled Decision");
-        setTotalVotesCount(data.totalVotes || 1);
+        setRankedChoices(resultData.rankedChoices);
+        setPollName(resultData.title || "Untitled Decision");
+        setVoterCount(voterData.numberOfVoters);
       }
     } catch (error) {
       setError("Failed to fetch results. Please try again.");
@@ -79,10 +87,12 @@ export default function Result() {
                 <Trophy className="w-12 h-12 text-blue-600" />
               </div>
               <h1 className="text-4xl font-bold text-gray-900">{pollName}</h1>
-              <p className="text-lg text-gray-600">
-                Based on {totalVotesCount}{" "}
-                {totalVotesCount === 1 ? "vote" : "votes"}
-              </p>
+              <div className="space-y-1">
+                <p className="text-sm text-gray-500">
+                  {voterCount} {voterCount === 1 ? "voter" : "voters"}{" "}
+                  participated
+                </p>
+              </div>
             </div>
 
             {/* Main Content */}
@@ -97,7 +107,7 @@ export default function Result() {
                 <>
                   {/* Results List */}
                   <div className="space-y-4">
-                    {rankedChoices.map((item, index) => (
+                    {rankedChoices.map((item) => (
                       <div
                         key={item.id}
                         className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"

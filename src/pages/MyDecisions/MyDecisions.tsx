@@ -1,20 +1,17 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { getMyDecisions } from "@/utils/api";
-import { BarChart3, ExternalLink, Loader2, Plus, Vote } from "lucide-react";
+import { getMyDecisions, getVoterCount } from "@/utils/api";
+import { Loader2, Plus, Vote, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
 
 interface Decision {
   id: string;
   title: string | null;
   createdAt: string;
-  choicesCount: number;
-  choices: {
-    id: number;
-    text: string;
-  }[];
+  voterCount?: number;
 }
 
 type DecisionType = "all" | "created" | "voted";
@@ -24,6 +21,7 @@ export default function MyDecisions() {
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState<DecisionType>("all");
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     fetchDecisions(type);
@@ -33,11 +31,44 @@ export default function MyDecisions() {
     try {
       setLoading(true);
       const data = await getMyDecisions(type);
-      setDecisions(data.decisions);
+
+      const decisionsWithVoters = await Promise.all(
+        data.decisions.map(async (decision: Decision) => {
+          const voterData = await getVoterCount(decision.id);
+          return {
+            ...decision,
+            voterCount: voterData.numberOfVoters,
+          };
+        })
+      );
+
+      setDecisions(decisionsWithVoters);
     } catch (error) {
       console.error("Error fetching decisions:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent, decisionId: string) => {
+    e.stopPropagation();
+    try {
+      const shareUrl = `${window.location.origin}/result/${decisionId}`;
+      const shareData = {
+        title: "Decide - Voting Results",
+        text: "Check out these voting results!",
+        url: shareUrl,
+      };
+
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        enqueueSnackbar("Link copied to clipboard!", { variant: "success" });
+      }
+    } catch (error) {
+      console.error("Error sharing link:", error);
+      enqueueSnackbar("Failed to share the result.", { variant: "error" });
     }
   };
 
@@ -111,7 +142,8 @@ export default function MyDecisions() {
                   <div
                     key={decision.id}
                     className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md 
-                             transition-all duration-300 border border-gray-100"
+                             cursor-pointer transition-all duration-300 border border-gray-100"
+                    onClick={() => navigate(`/result/${decision.id}`)}
                   >
                     <div className="flex justify-between items-start gap-4">
                       <div className="space-y-2">
@@ -130,30 +162,19 @@ export default function MyDecisions() {
                           )}
                         </p>
                         <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <BarChart3 className="w-4 h-4" />
-                          {decision.choicesCount} options
+                          <Vote className="w-4 h-4" />
+                          {decision.voterCount || 0}{" "}
+                          {decision.voterCount === 1 ? "voter" : "voters"}
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-blue-600 hover:text-blue-700"
-                          onClick={() => navigate(`/decide/${decision.id}`)}
-                        >
-                          <Vote className="w-4 h-4 mr-1" />
-                          Vote
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-blue-600 hover:text-blue-700"
-                          onClick={() => navigate(`/result/${decision.id}`)}
-                        >
-                          <ExternalLink className="w-4 h-4 mr-1" />
-                          Results
-                        </Button>
-                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-gray-500 hover:text-blue-600"
+                        onClick={(e) => handleShare(e, decision.id)}
+                      >
+                        <Share2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
                 ))
