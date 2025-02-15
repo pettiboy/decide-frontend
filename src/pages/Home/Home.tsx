@@ -1,8 +1,8 @@
+import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Hand, ListPlus } from "lucide-react"; // Icons
+import { BarChart3, Hand, Link, ListPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Footer from "@/components/Footer";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -50,6 +50,12 @@ export default function Home() {
                 <BarChart3 className="w-6 h-6 text-gray-700" />
                 <span className="text-lg">
                   Get a ranked list based on your votes
+                </span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Link className="w-6 h-6 text-gray-700" />
+                <span className="text-lg">
+                  Share your link and let others vote
                 </span>
               </div>
             </div>

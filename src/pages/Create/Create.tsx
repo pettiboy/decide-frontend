@@ -1,16 +1,17 @@
+import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { createDecision } from "@/utils/api";
-import { ArrowRight, Loader2, Plus } from "lucide-react";
+import { ArrowRight, Loader2, Plus, Sparkles } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "@/components/Footer";
 
 export default function Create() {
+  const [pollName, setPollName] = useState("");
   const [choices, setChoices] = useState<string[]>([]);
   const [newChoice, setNewChoice] = useState("");
   const [loading, setLoading] = useState(false);
@@ -61,6 +62,11 @@ export default function Create() {
   const comparisonCount =
     ((choices.length * (choices.length - 1)) / 2) * sliderMultiplier;
 
+  const handlePollNameMagic = () => {
+    setPollName("Magic Poll");
+    // TODO: Add auto-generate poll name logic
+  };
+
   return (
     <>
       <Navbar />
@@ -69,14 +75,27 @@ export default function Create() {
           <CardContent className="flex flex-col space-y-6">
             {/* Heading Section */}
             <div className="text-center">
-              <h1 className="text-2xl font-bold">Add Your Options</h1>
+              <h1 className="text-2xl font-bold">Add your options</h1>
               <p className="text-gray-500 text-md pb-2">
                 Enter the options you want to compare. You'll vote on these in
                 pairs later.
               </p>
             </div>
 
-            {/* Input and Add Button */}
+            {/* Poll Name Input */}
+            <div className="flex space-x-2 items-center">
+              <Input
+                value={pollName}
+                onChange={(e) => setPollName(e.target.value)}
+                placeholder="Enter poll name(optional)"
+                className="flex-1"
+              />
+              <Button variant="outline" onClick={handlePollNameMagic}>
+                <Sparkles />
+              </Button>
+            </div>
+
+            {/* Choice Input */}
             <div className="flex space-x-2">
               <Input
                 ref={inputRef}
@@ -100,7 +119,7 @@ export default function Create() {
 
             {/* Display Choices */}
             {choices.length > 0 && (
-              <ul className="space-y-1 text-lg">
+              <ol className="space-y-1 text-lg">
                 {choices.map((choice, index) => (
                   <li
                     key={index}
@@ -113,7 +132,7 @@ export default function Create() {
                     - {choice}
                   </li>
                 ))}
-              </ul>
+              </ol>
             )}
 
             {/* Start Button */}

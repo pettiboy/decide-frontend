@@ -2,7 +2,8 @@ import Navbar from "@/components/Navbar"; // Importing Navbar Component
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getNextComparison, submitComparison } from "@/utils/api";
-import { Loader2 } from "lucide-react";
+import { ExternalLink, Loader2 } from "lucide-react";
+import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -25,6 +26,7 @@ export default function Decide() {
     try {
       setLoading(true);
       const data = await getNextComparison(id!);
+
       if (!data || data.comparisonsRemaining === 0) {
         navigate(`/result/${id}`);
         return;
@@ -52,6 +54,28 @@ export default function Decide() {
       console.error("Error submitting choice:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSharePollLink = async () => {
+    try {
+      const shareUrl = `${window.location.origin}/decide/${id}`;
+      const shareData = {
+        title: "Decide - Vote on your Choices",
+        text: "Vote on my poll on Decide!",
+        url: shareUrl,
+      };
+
+      if (navigator.share) {
+        await navigator.share(shareData);
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        enqueueSnackbar("Link copied to clipboard!", { variant: "success" });
+      }
+    } catch (error) {
+      console.error("Error sharing link:", error);
+      enqueueSnackbar("Failed to share the result.", { variant: "error" });
     }
   };
 
@@ -117,6 +141,23 @@ export default function Decide() {
             ) : (
               <div className="text-center text-gray-600">Loading...</div>
             )}
+
+            <div>
+              <p className="text-gray-500 text-center text-sm mt-4 mb-2">
+                Share this with others and let them decide too!
+              </p>
+              <div className="bg-white border border-gray-300 rounded-lg p-3 flex items-center justify-between">
+                <span className="text-gray-700 truncate">
+                  {window.location.origin}/decide/{id}
+                </span>
+                <button
+                  onClick={handleSharePollLink}
+                  className="text-gray-600 hover:text-black"
+                >
+                  <ExternalLink className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
