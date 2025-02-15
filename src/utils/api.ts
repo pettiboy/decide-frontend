@@ -81,3 +81,15 @@ export const getResults = async (decisionId: string) => {
     throw error;
   }
 };
+
+export const generateTitle = async (choices: string[]) => {
+  try {
+    const response = await api.post("/generate-title", {
+      choices,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error generating title:", error);
+    throw error;
+  }
+};

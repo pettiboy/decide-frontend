@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { createDecision } from "@/utils/api";
+import { createDecision, generateTitle } from "@/utils/api";
 import { ArrowRight, Loader2, Plus, Sparkles } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useRef, useState } from "react";
@@ -57,9 +57,21 @@ export default function Create() {
   const comparisonCount =
     ((choices.length * (choices.length - 1)) / 2) * sliderMultiplier;
 
-  const handleTitleMagic = () => {
-    setTitle("Magic Poll");
-    // TODO: Add auto-generate poll name logic
+  const handleTitleMagic = async () => {
+    if (choices.length < 2) {
+      enqueueSnackbar("Add at least 2 choices to generate a title!", {
+        variant: "warning",
+      });
+      return;
+    }
+
+    try {
+      const data = await generateTitle(choices);
+      setTitle(data.title);
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar("Failed to generate title!", { variant: "error" });
+    }
   };
 
   return (
