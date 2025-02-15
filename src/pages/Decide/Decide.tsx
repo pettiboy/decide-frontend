@@ -34,7 +34,7 @@ export default function Decide() {
       const data = await getNextComparison(id!);
 
       if (!data || data.comparisonsRemaining === 0) {
-        navigate(`/decide/${id}`);
+        navigate(`/result/${id}`);
         return;
       }
       setComparison(data);

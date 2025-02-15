@@ -5,7 +5,7 @@ Decide uses **mathematical ranking algorithms** to generate a leaderboard based 
 
 ## 🌍 Try it Live
 
-🔗 [decide.pettiboy.com](https://decide.pettiboy.com)
+🔗 [decide.somehow.dev](https://decide.somehow.dev)
 
 ---
 
