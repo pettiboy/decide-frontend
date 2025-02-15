@@ -7,7 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import { createDecision } from "@/utils/api";
 import { ArrowRight, Loader2, Plus, Sparkles } from "lucide-react";
 import { useSnackbar } from "notistack";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Create() {
@@ -19,10 +19,6 @@ export default function Create() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
 
   const addChoice = () => {
     if (newChoice.trim()) {

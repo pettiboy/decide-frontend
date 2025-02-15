@@ -1,11 +1,29 @@
 import axios from "axios";
+import { auth } from "@/lib/firebase";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3009";
 
 const api = axios.create({
   baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
+
+// Add interceptor to include auth token
+api.interceptors.request.use(
+  async (config) => {
+    const user = auth.currentUser;
+    if (user) {
+      const token = await user.getIdToken();
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export default api;
 
 export const createDecision = async (choices: string[], multiplier: number) => {
   try {
