@@ -11,7 +11,7 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Create() {
-  const [pollName, setPollName] = useState("");
+  const [title, setTitle] = useState<string | null>(null);
   const [choices, setChoices] = useState<string[]>([]);
   const [newChoice, setNewChoice] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,6 @@ export default function Create() {
   const addChoice = () => {
     if (newChoice.trim()) {
       setChoices((prev) => [...prev, newChoice.trim()]);
-      enqueueSnackbar("Choice added!", { variant: "success" });
       setNewChoice("");
     } else {
       enqueueSnackbar("Please enter a valid choice!", { variant: "warning" });
@@ -45,7 +44,7 @@ export default function Create() {
     setLoading(true);
 
     try {
-      const data = await createDecision(choices, sliderMultiplier);
+      const data = await createDecision(title, choices, sliderMultiplier);
       navigate(`/decide/${data.decisionId}`);
     } catch (error) {
       console.log(error);
@@ -58,8 +57,8 @@ export default function Create() {
   const comparisonCount =
     ((choices.length * (choices.length - 1)) / 2) * sliderMultiplier;
 
-  const handlePollNameMagic = () => {
-    setPollName("Magic Poll");
+  const handleTitleMagic = () => {
+    setTitle("Magic Poll");
     // TODO: Add auto-generate poll name logic
   };
 
@@ -81,12 +80,12 @@ export default function Create() {
             {/* Poll Name Input */}
             <div className="flex space-x-2 items-center">
               <Input
-                value={pollName}
-                onChange={(e) => setPollName(e.target.value)}
-                placeholder="Enter poll name(optional)"
+                value={title || ""}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter title name(optional)"
                 className="flex-1"
               />
-              <Button variant="outline" onClick={handlePollNameMagic}>
+              <Button variant="outline" onClick={handleTitleMagic}>
                 <Sparkles />
               </Button>
             </div>

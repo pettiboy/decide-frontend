@@ -1,5 +1,5 @@
-import axios from "axios";
 import { auth } from "@/lib/firebase";
+import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3009";
 
@@ -25,9 +25,14 @@ api.interceptors.request.use(
 
 export default api;
 
-export const createDecision = async (choices: string[], multiplier: number) => {
+export const createDecision = async (
+  title: string | null,
+  choices: string[],
+  multiplier: number
+) => {
   try {
     const response = await api.post("/decisions", {
+      title,
       choices,
       requiredComparisonsPerPair: multiplier,
     });
