@@ -80,7 +80,7 @@ export default function Result() {
       const file = new File([blob], "result.png", { type: "image/png" });
       resultRef.current.style.display = "none";
 
-      const shareUrl = `${window.location.origin}/result/${id}`;
+      const shareUrl = `${window.location.origin}/decide/${id}`;
       const shareData = {
         title: `Results: ${pollName}`,
         text: `Check out the results of "${pollName}" on Decide! ${voterCount} ${
@@ -196,7 +196,7 @@ export default function Result() {
                     </p>
                     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                       <span className="text-gray-700 text-sm truncate">
-                        {window.location.origin}/result/{id}
+                        {window.location.origin}/decide/{id}
                       </span>
                       <button
                         onClick={handleShare}
