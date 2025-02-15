@@ -3,7 +3,14 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getResults } from "@/utils/api";
-import { ExternalLink, Loader2, RotateCw, Share2, Trophy } from "lucide-react";
+import {
+  ExternalLink,
+  Loader2,
+  RotateCw,
+  Share2,
+  Trophy,
+  Users,
+} from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -99,9 +106,12 @@ export default function Result() {
             <div className="text-center">
               <Trophy className="w-12 h-12 text-black mx-auto" />
               <h1 className="text-2xl font-bold pb-4 pt-2">Results</h1>
-              <p className="text-gray-500 text-md pb-2">
-                Based on {totalVotesCount} votes, here is ranked list
-              </p>
+              <div className="flex items-center justify-center space-x-2">
+                <Users className="w-6 h-6" />
+                <p className="text-gray-500 text-md">
+                  {totalVotesCount} voters
+                </p>
+              </div>
             </div>
 
             {loading ? (
@@ -163,13 +173,6 @@ export default function Result() {
                     <span>Share Results</span>
                   </Button>
                 </div>
-
-                {/* Consensus-based Ranking Info */}
-                <p className="text-gray-500 text-sm text-center mt-4">
-                  This ranking was generated using a consensus-based algorithm.
-                  It reflects the overall preferences based on your individual
-                  choices.
-                </p>
               </>
             )}
           </CardContent>
