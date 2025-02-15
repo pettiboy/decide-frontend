@@ -8,14 +8,17 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "npm run build && firebase deploy --only hosting:decide-pairwise"
+    "deploy": "npm run build && firebase deploy --only hosting"
   },
   "dependencies": {
+    "@radix-ui/react-popover": "^1.1.6",
     "@radix-ui/react-slider": "^1.2.3",
     "@radix-ui/react-slot": "^1.1.2",
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "firebase": "^11.3.1",
+    "html2canvas": "^1.4.1",
     "lucide-react": "^0.475.0",
     "notistack": "^3.0.2",
     "react": "^19.0.0",

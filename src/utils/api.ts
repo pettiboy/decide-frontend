@@ -1,15 +1,41 @@
+import { auth } from "@/lib/firebase";
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3009";
 
 const api = axios.create({
   baseURL: BASE_URL,
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
+  },
 });
 
-export const createDecision = async (choices: string[], multiplier: number) => {
+// Add interceptor to include auth token
+api.interceptors.request.use(
+  async (config) => {
+    const user = auth.currentUser;
+    if (user) {
+      const token = await user.getIdToken();
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export default api;
+
+export const createDecision = async (
+  title: string | null,
+  choices: string[],
+  multiplier: number
+) => {
   try {
     const response = await api.post("/decisions", {
+      title,
       choices,
       requiredComparisonsPerPair: multiplier,
     });
@@ -55,6 +81,42 @@ export const getResults = async (decisionId: string) => {
     return response.status === 204 ? null : response.data;
   } catch (error) {
     console.error("Error fetching results:", error);
+    throw error;
+  }
+};
+
+export const generateTitle = async (choices: string[]) => {
+  try {
+    const response = await api.post("/generate-title", {
+      choices,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error generating title:", error);
+    throw error;
+  }
+};
+
+export const getMyDecisions = async (
+  type: "all" | "created" | "voted" = "all"
+) => {
+  try {
+    const response = await api.get(
+      `/my-decisions${type !== "all" ? `?type=${type}` : ""}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching decisions:", error);
+    throw error;
+  }
+};
+
+export const getVoterCount = async (decisionId: string) => {
+  try {
+    const response = await api.get(`/decisions/${decisionId}/voter-count`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching voter count:", error);
     throw error;
   }
 };
