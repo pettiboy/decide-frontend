@@ -65,11 +65,12 @@ export default function Result() {
     try {
       resultRef.current.style.display = "block";
       const canvas = await html2canvas(resultRef.current, {
-        scale: 5,
+        scale: 2,
         logging: false,
-        backgroundColor: "#ffffff",
+        backgroundColor: "#f8fafc",
         width: 1080,
         height: 1080,
+        allowTaint: true,
       });
       const blob: BlobPart = await new Promise((resolve, reject) =>
         canvas.toBlob((blob: Blob | null) => {
@@ -110,9 +111,17 @@ export default function Result() {
       const canvas = await html2canvas(resultRef.current, {
         scale: 2,
         logging: false,
-        backgroundColor: "#ffffff",
+        backgroundColor: "#f8fafc",
         width: 1080,
-        height: 1920,
+        height: 1080,
+        useCORS: true,
+        allowTaint: true,
+        onclone: (clonedDoc) => {
+          const element = clonedDoc.querySelector('[ref="resultRef"]');
+          if (element) {
+            element.style.display = "block";
+          }
+        },
       });
       resultRef.current.style.display = "none";
 
