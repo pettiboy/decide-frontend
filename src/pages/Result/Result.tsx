@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { getResults, getVoterCount } from "@/utils/api";
 import html2canvas from "html2canvas";
 
-import { Loader2, RotateCw, Share2, Trophy } from "lucide-react";
+import { Camera, Loader2, RotateCw, Share2, Trophy } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -26,6 +26,7 @@ export default function Result() {
 
   useEffect(() => {
     fetchResults();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchResults = async () => {
@@ -63,9 +64,17 @@ export default function Result() {
     if (!resultRef.current) return;
     try {
       resultRef.current.style.display = "block";
-      const canvas = await html2canvas(resultRef.current);
-      const blob = await new Promise((resolve) =>
-        canvas.toBlob(resolve, "image/png")
+      const canvas = await html2canvas(resultRef.current, {
+        
+      });
+      const blob: BlobPart = await new Promise((resolve, reject) =>
+        canvas.toBlob((blob: Blob | null) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error("Failed to create blob."));
+          }
+        }, "image/png")
       );
       const file = new File([blob], "result.png", { type: "image/png" });
       resultRef.current.style.display = "none";
@@ -87,6 +96,48 @@ export default function Result() {
     } catch (error) {
       console.error("Error sharing link:", error);
       enqueueSnackbar("Failed to share the result.", { variant: "error" });
+    }
+  };
+
+  const handleShareToInstagram = async () => {
+    if (!resultRef.current) return;
+    try {
+      resultRef.current.style.display = "block";
+      const canvas = await html2canvas(resultRef.current, {
+        scale: 2,
+        logging: false,
+        backgroundColor: "#ffffff",
+        width: 1080,
+        height: 1920,
+      });
+      resultRef.current.style.display = "none";
+
+      const blob = await new Promise<Blob>((resolve) => {
+        canvas.toBlob((blob) => resolve(blob as Blob), "image/png", 1.0);
+      });
+
+      const file = new File([blob], "result.png", { type: "image/png" });
+
+      if (navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: "Decide - Voting Results",
+          text: `Check out the results for "${pollName}"!`,
+        });
+      } else {
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png");
+        link.download = "decide-result.png";
+        link.click();
+        enqueueSnackbar("Image downloaded successfully!", {
+          variant: "success",
+        });
+      }
+    } catch (error) {
+      console.error("Error sharing to Instagram:", error);
+      enqueueSnackbar("Failed to create shareable image.", {
+        variant: "error",
+      });
     }
   };
 
@@ -158,7 +209,15 @@ export default function Result() {
                       onClick={handleShare}
                     >
                       <Share2 className="w-5 h-5 mr-2" />
-                      Share Results
+                      Share Link
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex-1 py-6 rounded-xl hover:bg-blue-50"
+                      onClick={handleShareToInstagram}
+                    >
+                      <Camera className="w-5 h-5 mr-2" />
+                      Share Image
                     </Button>
                   </div>
                 </>
