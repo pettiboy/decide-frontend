@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { getResults, getVoterCount } from "@/utils/api";
 import html2canvas from "html2canvas";
 
-import { Camera, Loader2, RotateCw, Share2, Trophy } from "lucide-react";
+import { Loader2, RotateCw, Share2, Trophy } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -65,9 +65,7 @@ export default function Result() {
     try {
       resultRef.current.style.display = "block";
       const canvas = await html2canvas(resultRef.current, {
-        scale: 2,
         logging: false,
-        backgroundColor: "#f8fafc",
         width: 1080,
         height: 1080,
         allowTaint: true,
@@ -136,6 +134,7 @@ export default function Result() {
           files: [file],
           title: "Decide - Voting Results",
           text: `Check out the results for "${pollName}"!`,
+          url: `${window.location.origin}/decide/${id}`,
         });
       } else {
         const link = document.createElement("a");
@@ -224,14 +223,14 @@ export default function Result() {
                       <Share2 className="w-5 h-5 mr-2" />
                       Share Link
                     </Button>
-                    <Button
+                    {/* <Button
                       variant="outline"
                       className="flex-1 py-6 rounded-xl hover:bg-blue-50"
                       onClick={handleShareToInstagram}
                     >
                       <Camera className="w-5 h-5 mr-2" />
                       Share Image
-                    </Button>
+                    </Button> */}
                   </div>
                 </>
               )}
