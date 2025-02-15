@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createDecision, generateTitle } from "@/utils/api";
-import { ArrowRight, Loader2, Plus, Sparkles } from "lucide-react";
+import { ArrowRight, Loader2, Plus, Sparkles, X } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +31,10 @@ export default function Create() {
       e.preventDefault();
       addChoice();
     }
+  };
+
+  const deleteChoice = (index: number) => {
+    setChoices((prev) => prev.filter((_, i) => i !== index));
   };
 
   const startDecision = async () => {
@@ -80,7 +84,7 @@ export default function Create() {
     <>
       <Navbar />
       <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-        <div className="container mx-auto px-4 py-16">
+        <div className="container mx-auto px-4 py-16 pb-32">
           <div className="max-w-2xl mx-auto">
             {/* Header Section */}
             <div className="text-center space-y-4 mb-12">
@@ -130,19 +134,26 @@ export default function Create() {
                 </Button>
               </div>
 
-              {/* Choices List */}
+              {/* Updated Choices List with delete buttons */}
               {choices.length > 0 && (
                 <div className="space-y-3">
                   {choices.map((choice, index) => (
                     <div
                       key={index}
-                      className="p-4 bg-gray-50 rounded-xl text-gray-700 opacity-0 animate-slide-in"
+                      className="p-4 bg-gray-50 rounded-xl text-gray-700 opacity-0 animate-slide-in flex justify-between items-center"
                       style={{
                         animationDelay: `${index * 50}ms`,
                         animationFillMode: "forwards",
                       }}
                     >
-                      {choice}
+                      <span>{choice}</span>
+                      <button
+                        onClick={() => deleteChoice(index)}
+                        className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                        aria-label="Delete choice"
+                      >
+                        <X className="w-4 h-4 text-gray-500" />
+                      </button>
                     </div>
                   ))}
                 </div>

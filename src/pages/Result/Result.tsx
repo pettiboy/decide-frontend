@@ -91,65 +91,29 @@ export default function Result() {
       };
 
       if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
+        try {
+          await navigator.share(shareData);
+          return;
+        } catch (error) {
+          console.log("Web Share API failed, falling back to clipboard", error);
+        }
+      }
+
+      // Modern fallback using Clipboard API
+      const clipboardItem = new ClipboardItem({
+        "text/plain": new Blob([shareUrl], { type: "text/plain" }),
+      });
+      try {
+        await navigator.clipboard.write([clipboardItem]);
         enqueueSnackbar("Link copied to clipboard!", { variant: "success" });
+      } catch {
+        enqueueSnackbar("Failed to copy link. Please try again.", {
+          variant: "error",
+        });
       }
     } catch (error) {
       console.error("Error sharing link:", error);
       enqueueSnackbar("Failed to share the result.", { variant: "error" });
-    }
-  };
-
-  const handleShareToInstagram = async () => {
-    if (!resultRef.current) return;
-    try {
-      resultRef.current.style.display = "block";
-      const canvas = await html2canvas(resultRef.current, {
-        scale: 2,
-        logging: false,
-        backgroundColor: "#f8fafc",
-        width: 1080,
-        height: 1080,
-        useCORS: true,
-        allowTaint: true,
-        onclone: (clonedDoc) => {
-          const element = clonedDoc.querySelector('[ref="resultRef"]');
-          if (element) {
-            element.style.display = "block";
-          }
-        },
-      });
-      resultRef.current.style.display = "none";
-
-      const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => resolve(blob as Blob), "image/png", 1.0);
-      });
-
-      const file = new File([blob], "result.png", { type: "image/png" });
-
-      if (navigator.share && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: "Decide - Voting Results",
-          text: `Check out the results for "${pollName}"!`,
-          url: `${window.location.origin}/decide/${id}`,
-        });
-      } else {
-        const link = document.createElement("a");
-        link.href = canvas.toDataURL("image/png");
-        link.download = "decide-result.png";
-        link.click();
-        enqueueSnackbar("Image downloaded successfully!", {
-          variant: "success",
-        });
-      }
-    } catch (error) {
-      console.error("Error sharing to Instagram:", error);
-      enqueueSnackbar("Failed to create shareable image.", {
-        variant: "error",
-      });
     }
   };
 

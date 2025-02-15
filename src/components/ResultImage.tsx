@@ -26,13 +26,12 @@ const ResultImage = forwardRef<HTMLDivElement, ResultImageProps>(
     return (
       <div
         ref={ref}
-        className="hidden"
         style={{
+          display: "none",
           width: "1080px",
           height: "1080px",
           background: "linear-gradient(to bottom, #f8fafc, #ffffff)",
           padding: "60px",
-          display: "flex",
           flexDirection: "column",
           fontFamily: "system-ui, -apple-system, sans-serif",
           position: "relative",
