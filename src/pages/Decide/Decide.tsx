@@ -120,7 +120,7 @@ export default function Decide() {
                     {loading ? (
                       <Loader2 className="animate-spin w-6 h-6" />
                     ) : (
-                      comparison.choice1.text
+                      comparison.choice1?.text
                     )}
                   </Button>
                   <Button
@@ -132,7 +132,7 @@ export default function Decide() {
                     {loading ? (
                       <Loader2 className="animate-spin w-6 h-6" />
                     ) : (
-                      comparison.choice2.text
+                      comparison.choice2?.text
                     )}
                   </Button>
                 </div>

@@ -1,10 +1,13 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import ResultImage from "@/components/ResultImage";
 import { Button } from "@/components/ui/button";
 import { getResults } from "@/utils/api";
-import { ExternalLink, Loader2, RotateCw, Share2, Trophy } from "lucide-react";
+import html2canvas from "html2canvas";
+
+import { Loader2, RotateCw, Share2, Trophy } from "lucide-react";
 import { useSnackbar } from "notistack";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function Result() {
@@ -19,6 +22,8 @@ export default function Result() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const resultRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     fetchResults();
   }, []);
@@ -26,12 +31,14 @@ export default function Result() {
   const fetchResults = async () => {
     try {
       setLoading(true);
+
       const data = await getResults(id!);
+
       if (!data || !data.rankedChoices || data.rankedChoices.length === 0) {
         setError("Results are not available yet.");
       } else {
         setRankedChoices(data.rankedChoices);
-        setPollName(data.title || "Untitled Decision");
+        setPollName(data?.decision?.title || "Untitled Decision");
         setTotalVotesCount(data.totalVotes || 1);
       }
     } catch (error) {
@@ -47,12 +54,22 @@ export default function Result() {
   };
 
   const handleShare = async () => {
+    if (!resultRef.current) return;
     try {
+      resultRef.current.style.display = "block";
+      const canvas = await html2canvas(resultRef.current);
+      const blob = await new Promise((resolve) =>
+        canvas.toBlob(resolve, "image/png")
+      );
+      const file = new File([blob], "result.png", { type: "image/png" });
+      resultRef.current.style.display = "none";
+
       const shareUrl = `${window.location.origin}/result/${id}`;
       const shareData = {
         title: "Decide - Voting Results",
         text: "Check out my ranked results from Decide!",
         url: shareUrl,
+        files: [file],
       };
 
       if (navigator.share) {
@@ -68,7 +85,7 @@ export default function Result() {
   };
 
   return (
-    <>
+    <div>
       <Navbar />
       <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4 py-16">
@@ -143,6 +160,14 @@ export default function Result() {
         </div>
       </main>
       <Footer />
-    </>
+      <div>
+        <ResultImage
+          ref={resultRef}
+          pollName={pollName}
+          totalVotesCount={totalVotesCount}
+          rankedChoices={rankedChoices}
+        />
+      </div>
+    </div>
   );
 }
