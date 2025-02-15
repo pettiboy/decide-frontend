@@ -11,6 +11,7 @@
     "deploy": "npm run build && firebase deploy --only hosting:decide-pairwise"
   },
   "dependencies": {
+    "@radix-ui/react-popover": "^1.1.6",
     "@radix-ui/react-slider": "^1.2.3",
     "@radix-ui/react-slot": "^1.1.2",
     "axios": "^1.7.9",

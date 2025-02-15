@@ -1,10 +1,15 @@
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { getNextComparison, submitComparison } from "@/utils/api";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ExternalLink, Loader2, InfoIcon } from "lucide-react";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function Decide() {
   const { id } = useParams();
@@ -15,6 +20,7 @@ export default function Decide() {
     choice2: { id: number; text: string };
     comparisonsRemaining: number;
     totalComparisons: number;
+    decision: { title: string };
   } | null>(null);
 
   useEffect(() => {
@@ -98,13 +104,23 @@ export default function Decide() {
           <div className="max-w-2xl mx-auto">
             {/* Header Section */}
             <div className="text-center space-y-4 mb-12">
-              <h1 className="text-4xl font-bold text-gray-900">
+              {comparison?.decision.title && (
+                <h1 className="text-4xl font-bold text-gray-900">
+                  {comparison.decision.title}
+                </h1>
+              )}
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
                 This or <span className="text-blue-600">That?</span>
-              </h1>
-              <p className="text-lg text-gray-600">
-                Choose the option you prefer. Your choices will help rank all
-                options.
-              </p>
+                <Popover>
+                  <PopoverTrigger>
+                    <InfoIcon className="w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                  </PopoverTrigger>
+                  <PopoverContent className="text-sm text-gray-600 w-[260px]">
+                    Choose the option you prefer. Your choices will help rank
+                    all options.
+                  </PopoverContent>
+                </Popover>
+              </h2>
             </div>
 
             {/* Main Content */}
@@ -143,17 +159,17 @@ export default function Decide() {
               )}
 
               {/* Share Section */}
-              <div className="pt-4 border-t border-gray-100">
-                <p className="text-gray-500 text-center text-sm mb-3">
+              <div className="pt-8 border-t border-gray-100">
+                <p className="text-gray-600 text-center mb-4">
                   Share this with others and let them decide too!
                 </p>
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                  <span className="text-gray-700 truncate">
+                  <span className="text-gray-700 text-sm truncate">
                     {window.location.origin}/decide/{id}
                   </span>
                   <button
                     onClick={handleSharePollLink}
-                    className="text-blue-600 hover:text-blue-700"
+                    className="text-blue-600 hover:text-blue-700 ml-2"
                   >
                     <ExternalLink className="w-5 h-5" />
                   </button>
