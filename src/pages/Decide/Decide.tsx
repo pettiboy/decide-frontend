@@ -23,11 +23,6 @@ export default function Decide() {
     decision: { title: string };
   } | null>(null);
 
-  useEffect(() => {
-    fetchNextComparison();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const fetchNextComparison = async () => {
     try {
       setLoading(true);
@@ -44,6 +39,10 @@ export default function Decide() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchNextComparison();
+  }, [id, navigate]);
 
   const handleChoice = async (chosenOption: string) => {
     if (!comparison) return;

@@ -25,36 +25,34 @@ export default function Result() {
   const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchResults();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const fetchResults = async () => {
+      try {
+        setLoading(true);
+        const [resultData, voterData] = await Promise.all([
+          getResults(id!),
+          getVoterCount(id!),
+        ]);
 
-  const fetchResults = async () => {
-    try {
-      setLoading(true);
-      const [resultData, voterData] = await Promise.all([
-        getResults(id!),
-        getVoterCount(id!),
-      ]);
-
-      if (
-        !resultData ||
-        !resultData.rankedChoices ||
-        resultData.rankedChoices.length === 0
-      ) {
-        setError("Results are not available yet.");
-      } else {
-        setRankedChoices(resultData.rankedChoices);
-        setPollName(resultData.decision.title || "Untitled Decision");
-        setVoterCount(voterData.numberOfVoters);
+        if (
+          !resultData ||
+          !resultData.rankedChoices ||
+          resultData.rankedChoices.length === 0
+        ) {
+          setError("Results are not available yet.");
+        } else {
+          setRankedChoices(resultData.rankedChoices);
+          setPollName(resultData.decision.title || "Untitled Decision");
+          setVoterCount(voterData.numberOfVoters);
+        }
+      } catch (error) {
+        setError("Failed to fetch results. Please try again.");
+        console.error("Error fetching results:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      setError("Failed to fetch results. Please try again.");
-      console.error("Error fetching results:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    fetchResults();
+  }, [id]);
 
   const handleRestart = () => {
     navigate("/create");
