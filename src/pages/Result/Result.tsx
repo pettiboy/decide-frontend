@@ -1,16 +1,8 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { getResults } from "@/utils/api";
-import {
-  ExternalLink,
-  Loader2,
-  RotateCw,
-  Share2,
-  Trophy,
-  Users,
-} from "lucide-react";
+import { ExternalLink, Loader2, RotateCw, Share2, Trophy } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -39,6 +31,8 @@ export default function Result() {
         setError("Results are not available yet.");
       } else {
         setRankedChoices(data.rankedChoices);
+        setPollName(data.title || "Untitled Decision");
+        setTotalVotesCount(data.totalVotes || 1);
       }
     } catch (error) {
       setError("Failed to fetch results. Please try again.");
@@ -49,29 +43,7 @@ export default function Result() {
   };
 
   const handleRestart = () => {
-    navigate("/"); // Redirect to the home page to start over
-  };
-
-  const handleSharePollLink = async () => {
-    try {
-      const shareUrl = `${window.location.origin}/decide/${id}`;
-      const shareData = {
-        title: "Decide - Vote on your Choices",
-        text: "Vote on my poll on Decide!",
-        url: shareUrl,
-      };
-
-      if (navigator.share) {
-        await navigator.share(shareData);
-        await navigator.clipboard.writeText(shareUrl);
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        enqueueSnackbar("Link copied to clipboard!", { variant: "success" });
-      }
-    } catch (error) {
-      console.error("Error sharing link:", error);
-      enqueueSnackbar("Failed to share the result.", { variant: "error" });
-    }
+    navigate("/");
   };
 
   const handleShare = async () => {
@@ -98,86 +70,78 @@ export default function Result() {
   return (
     <>
       <Navbar />
-      <div className="flex items-center justify-center flex-col min-h-screen bg-gray-100 px-4">
-        <p className="text-lg text-gray-600 mb-4">{pollName}</p>
-        <Card className="w-full max-w-lg p-4 sm:p-6 lg:p-8 shadow-xl rounded-3xl bg-white">
-          <CardContent className="flex flex-col space-y-6">
-            {/* Your Ranking Heading */}
-            <div className="text-center">
-              <Trophy className="w-12 h-12 text-black mx-auto" />
-              <h1 className="text-2xl font-bold pb-4 pt-2">Results</h1>
-              <div className="flex items-center justify-center space-x-2">
-                <Users className="w-6 h-6" />
-                <p className="text-gray-500 text-md">
-                  {totalVotesCount} voters
-                </p>
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="container mx-auto px-4 py-16">
+          <div className="max-w-2xl mx-auto">
+            {/* Header Section */}
+            <div className="text-center space-y-4 mb-12">
+              <div className="inline-block p-4 bg-blue-50 rounded-full mb-4">
+                <Trophy className="w-12 h-12 text-blue-600" />
               </div>
+              <h1 className="text-4xl font-bold text-gray-900">{pollName}</h1>
+              <p className="text-lg text-gray-600">
+                Based on {totalVotesCount}{" "}
+                {totalVotesCount === 1 ? "vote" : "votes"}
+              </p>
             </div>
 
-            {loading ? (
-              <div className="flex justify-center items-center">
-                <Loader2 className="animate-spin w-8 h-8 text-gray-600" />
-              </div>
-            ) : error ? (
-              <p className="text-center text-red-500">{error}</p>
-            ) : (
-              <>
-                <ul className="space-y-2 text-lg">
-                  {rankedChoices.map((item) => (
-                    <li
-                      key={item.id}
-                      className="text-gray-700 flex justify-between border-b pb-2"
-                    >
-                      <span className="font-semibold">
-                        {item.rank}. {item.text}
-                      </span>
-                      <span className="text-gray-500">
-                        Score: {item.score.toFixed(2)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div>
-                  <p className="text-gray-500 text-center text-sm mt-4 mb-2">
-                    Share this with others and let them decide too!
-                  </p>
-                  <div className="bg-white border border-gray-300 rounded-lg p-3 flex items-center justify-between">
-                    <span className="text-gray-700 truncate">
-                      {window.location.origin}/decide/{id}
-                    </span>
-                    <button
-                      onClick={handleSharePollLink}
-                      className="text-gray-600 hover:text-black"
-                    >
-                      <ExternalLink className="w-5 h-5" />
-                    </button>
+            {/* Main Content */}
+            <div className="space-y-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+              {loading ? (
+                <div className="flex justify-center items-center py-12">
+                  <Loader2 className="animate-spin w-8 h-8 text-blue-600" />
+                </div>
+              ) : error ? (
+                <p className="text-center text-red-500 py-8">{error}</p>
+              ) : (
+                <>
+                  {/* Results List */}
+                  <div className="space-y-4">
+                    {rankedChoices.map((item, index) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
+                      >
+                        <div className="flex items-center gap-4">
+                          <span className="text-2xl font-bold text-blue-600">
+                            #{item.rank}
+                          </span>
+                          <span className="text-lg text-gray-900">
+                            {item.text}
+                          </span>
+                        </div>
+                        <span className="text-sm text-gray-500">
+                          Score: {item.score.toFixed(2)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                </div>
 
-                {/* Start Over and Share Buttons */}
-                <div className="flex flex-col sm:flex-row sm:justify-between space-y-4 sm:space-y-0 sm:space-x-4">
-                  <Button
-                    className="bg-black text-white flex items-center space-x-2 px-4 py-2 w-full sm:w-auto"
-                    onClick={handleRestart}
-                  >
-                    <RotateCw className="w-5 h-5" />
-                    <span>Create new poll</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex items-center space-x-2 px-4 py-2 w-full sm:w-auto"
-                    onClick={handleShare}
-                  >
-                    <Share2 className="w-5 h-5" />
-                    <span>Share Results</span>
-                  </Button>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                    <Button
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-6 rounded-xl
+                                shadow-lg hover:shadow-xl transition-all duration-300"
+                      onClick={handleRestart}
+                    >
+                      <RotateCw className="w-5 h-5 mr-2" />
+                      Create New Poll
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex-1 py-6 rounded-xl hover:bg-blue-50"
+                      onClick={handleShare}
+                    >
+                      <Share2 className="w-5 h-5 mr-2" />
+                      Share Results
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
       <Footer />
     </>
   );

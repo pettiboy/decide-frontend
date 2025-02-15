@@ -1,6 +1,5 @@
-import Navbar from "@/components/Navbar"; // Importing Navbar Component
+import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { getNextComparison, submitComparison } from "@/utils/api";
 import { ExternalLink, Loader2 } from "lucide-react";
 import { enqueueSnackbar } from "notistack";
@@ -80,8 +79,7 @@ export default function Decide() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navbar Component with Progress */}
+    <>
       <Navbar
         progress={
           comparison
@@ -95,26 +93,27 @@ export default function Decide() {
             : undefined
         }
       />
-
-      {/* Main Content */}
-      <div className="flex items-center justify-center px-4 min-h-[calc(100vh-64px)]">
-        <Card className="w-full max-w-xl p-4 sm:p-6 shadow-xl rounded-3xl bg-white">
-          <CardContent className="flex flex-col space-y-6">
-            {/* Heading Section */}
-            <div className="text-center">
-              <h1 className="text-2xl font-bold">This or That?</h1>
-              <p className="text-gray-500 text-md">
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="container mx-auto px-4 py-16">
+          <div className="max-w-2xl mx-auto">
+            {/* Header Section */}
+            <div className="text-center space-y-4 mb-12">
+              <h1 className="text-4xl font-bold text-gray-900">
+                This or <span className="text-blue-600">That?</span>
+              </h1>
+              <p className="text-lg text-gray-600">
                 Choose the option you prefer. Your choices will help rank all
                 options.
               </p>
             </div>
 
-            {comparison ? (
-              <>
+            {/* Main Content */}
+            <div className="space-y-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+              {comparison ? (
                 <div className="space-y-4">
                   <Button
                     variant="outline"
-                    className="text-lg py-10 rounded-xl w-full"
+                    className="w-full p-8 text-lg rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
                     onClick={() => handleChoice("choice 1")}
                     disabled={loading}
                   >
@@ -126,7 +125,7 @@ export default function Decide() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="text-lg py-10 rounded-xl w-full"
+                    className="w-full p-8 text-lg rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
                     onClick={() => handleChoice("choice 2")}
                     disabled={loading}
                   >
@@ -137,30 +136,33 @@ export default function Decide() {
                     )}
                   </Button>
                 </div>
-              </>
-            ) : (
-              <div className="text-center text-gray-600">Loading...</div>
-            )}
+              ) : (
+                <div className="text-center py-8">
+                  <Loader2 className="animate-spin w-8 h-8 text-blue-600 mx-auto" />
+                </div>
+              )}
 
-            <div>
-              <p className="text-gray-500 text-center text-sm mt-4 mb-2">
-                Share this with others and let them decide too!
-              </p>
-              <div className="bg-white border border-gray-300 rounded-lg p-3 flex items-center justify-between">
-                <span className="text-gray-700 truncate">
-                  {window.location.origin}/decide/{id}
-                </span>
-                <button
-                  onClick={handleSharePollLink}
-                  className="text-gray-600 hover:text-black"
-                >
-                  <ExternalLink className="w-5 h-5" />
-                </button>
+              {/* Share Section */}
+              <div className="pt-4 border-t border-gray-100">
+                <p className="text-gray-500 text-center text-sm mb-3">
+                  Share this with others and let them decide too!
+                </p>
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <span className="text-gray-700 truncate">
+                    {window.location.origin}/decide/{id}
+                  </span>
+                  <button
+                    onClick={handleSharePollLink}
+                    className="text-blue-600 hover:text-blue-700"
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+          </div>
+        </div>
+      </main>
+    </>
   );
 }
