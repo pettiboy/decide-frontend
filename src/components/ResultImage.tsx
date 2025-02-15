@@ -1,5 +1,5 @@
-import { forwardRef } from "react";
 import { Trophy } from "lucide-react";
+import { forwardRef } from "react";
 
 interface RankedChoice {
   id: number;
@@ -161,16 +161,16 @@ const ResultImage = forwardRef<HTMLDivElement, ResultImageProps>(
             style={{
               marginTop: "40px",
               textAlign: "center",
-              background: "#4F46E5",
+              // background: "#4F46E5",
               padding: "12px 32px",
               borderRadius: "999px",
               display: "inline-block",
               alignSelf: "center",
             }}
           >
+            Powered by{" "}
             <p
               style={{
-                color: "white",
                 fontSize: "24px",
                 fontWeight: "500",
                 verticalAlign: "center",
