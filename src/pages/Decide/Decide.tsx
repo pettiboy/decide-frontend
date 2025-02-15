@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { getNextComparison, submitComparison } from "@/utils/api";
-import { ExternalLink, Loader2, InfoIcon } from "lucide-react";
+import { Loader2, InfoIcon, Share2 } from "lucide-react";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -25,6 +25,7 @@ export default function Decide() {
 
   useEffect(() => {
     fetchNextComparison();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchNextComparison = async () => {
@@ -33,7 +34,7 @@ export default function Decide() {
       const data = await getNextComparison(id!);
 
       if (!data || data.comparisonsRemaining === 0) {
-        navigate(`/result/${id}`);
+        navigate(`/decide/${id}`);
         return;
       }
       setComparison(data);
@@ -171,7 +172,7 @@ export default function Decide() {
                     onClick={handleSharePollLink}
                     className="text-blue-600 hover:text-blue-700 ml-2"
                   >
-                    <ExternalLink className="w-5 h-5" />
+                    <Share2 className="w-5 h-5" />
                   </button>
                 </div>
               </div>

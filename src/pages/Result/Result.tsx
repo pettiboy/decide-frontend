@@ -57,7 +57,7 @@ export default function Result() {
   };
 
   const handleRestart = () => {
-    navigate("/");
+    navigate("/create");
   };
 
   const handleShare = async () => {
@@ -84,8 +84,10 @@ export default function Result() {
 
       const shareUrl = `${window.location.origin}/result/${id}`;
       const shareData = {
-        title: "Decide - Voting Results",
-        text: "Check out my ranked results from Decide!",
+        title: `Results: ${pollName}`,
+        text: `Check out the results of "${pollName}" on Decide! ${voterCount} ${
+          voterCount === 1 ? "person has" : "people have"
+        } voted.`,
         url: shareUrl,
         files: [file],
       };
@@ -174,27 +176,37 @@ export default function Result() {
                     <Button
                       className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-6 rounded-xl
                                 shadow-lg hover:shadow-xl transition-all duration-300"
-                      onClick={handleRestart}
+                      onClick={handleShare}
                     >
-                      <RotateCw className="w-5 h-5 mr-2" />
-                      Create New Poll
+                      <Share2 className="w-5 h-5 mr-2" />
+                      Share With Image
                     </Button>
                     <Button
                       variant="outline"
                       className="flex-1 py-6 rounded-xl hover:bg-blue-50"
-                      onClick={handleShare}
+                      onClick={handleRestart}
                     >
-                      <Share2 className="w-5 h-5 mr-2" />
-                      Share Link
+                      <RotateCw className="w-5 h-5 mr-2" />
+                      Start New Poll
                     </Button>
-                    {/* <Button
-                      variant="outline"
-                      className="flex-1 py-6 rounded-xl hover:bg-blue-50"
-                      onClick={handleShareToInstagram}
-                    >
-                      <Camera className="w-5 h-5 mr-2" />
-                      Share Image
-                    </Button> */}
+                  </div>
+
+                  {/* Share Section */}
+                  <div className="pt-8 border-t border-gray-100">
+                    <p className="text-gray-600 text-center mb-4">
+                      Share this with others and let them decide too!
+                    </p>
+                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                      <span className="text-gray-700 text-sm truncate">
+                        {window.location.origin}/result/{id}
+                      </span>
+                      <button
+                        onClick={handleShare}
+                        className="text-blue-600 hover:text-blue-700 ml-2"
+                      >
+                        <Share2 className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                 </>
               )}

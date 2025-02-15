@@ -53,18 +53,36 @@ export default function MyDecisions() {
   const handleShare = async (e: React.MouseEvent, decisionId: string) => {
     e.stopPropagation();
     try {
-      const shareUrl = `${window.location.origin}/result/${decisionId}`;
+      const shareUrl = `${window.location.origin}/decide/${decisionId}`;
       const shareData = {
-        title: "Decide - Voting Results",
-        text: "Check out these voting results!",
+        title: `Vote on "${
+          decisions.find((d) => d.id === decisionId)?.title ||
+          "Untitled Decision"
+        }"`,
+        text: "Help make this decision on Decide!",
         url: shareUrl,
       };
 
       if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
+        try {
+          await navigator.share(shareData);
+          return;
+        } catch (error) {
+          console.log("Web Share API failed, falling back to clipboard", error);
+        }
+      }
+
+      // Modern fallback using Clipboard API
+      const clipboardItem = new ClipboardItem({
+        "text/plain": new Blob([shareUrl], { type: "text/plain" }),
+      });
+      try {
+        await navigator.clipboard.write([clipboardItem]);
         enqueueSnackbar("Link copied to clipboard!", { variant: "success" });
+      } catch {
+        enqueueSnackbar("Failed to copy link. Please try again.", {
+          variant: "error",
+        });
       }
     } catch (error) {
       console.error("Error sharing link:", error);
@@ -143,7 +161,7 @@ export default function MyDecisions() {
                     key={decision.id}
                     className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md 
                              cursor-pointer transition-all duration-300 border border-gray-100"
-                    onClick={() => navigate(`/result/${decision.id}`)}
+                    onClick={() => navigate(`/decide/${decision.id}`)}
                   >
                     <div className="flex justify-between items-start gap-4">
                       <div className="space-y-2">
