@@ -14,9 +14,9 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <AuthProvider>
+      <ProtectedRoute>
         <Home />
-      </AuthProvider>
+      </ProtectedRoute>
     ),
   },
   {
@@ -28,7 +28,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/decide/:id",
+    path: "/vote/:id",
     element: (
       <ProtectedRoute>
         <Decide />

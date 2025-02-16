@@ -2,7 +2,6 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { getNextComparison, submitComparison } from "@/utils/api";
 import { Loader2, InfoIcon, Share2 } from "lucide-react";
-import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -10,6 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useSnackbar } from "notistack";
 
 export default function Decide() {
   const { id } = useParams();
@@ -22,6 +22,7 @@ export default function Decide() {
     totalComparisons: number;
     decision: { title: string };
   } | null>(null);
+  const { enqueueSnackbar } = useSnackbar();
 
   const fetchNextComparison = async () => {
     try {
@@ -35,6 +36,10 @@ export default function Decide() {
       setComparison(data);
     } catch (error) {
       console.error("Error fetching next comparison:", error);
+      enqueueSnackbar("Invalid decision code. Please check and try again.", {
+        variant: "error",
+      });
+      navigate("/");
     } finally {
       setLoading(false);
     }
@@ -48,6 +53,13 @@ export default function Decide() {
     if (!comparison) return;
     try {
       setLoading(true);
+      // Remove focus and active states from all buttons
+      const buttons = document.querySelectorAll("button");
+      buttons.forEach((button) => {
+        button.blur();
+        button.classList.remove("active");
+      });
+
       await submitComparison(
         id!,
         comparison.choice1.id,
@@ -62,26 +74,13 @@ export default function Decide() {
     }
   };
 
-  const handleSharePollLink = async () => {
-    try {
-      const shareUrl = `${window.location.origin}/decide/${id}`;
-      const shareData = {
-        title: "Decide - Vote on your Choices",
-        text: "Vote on my poll on Decide!",
-        url: shareUrl,
-      };
+  const handleShare = () => {
+    const shareText = `🤔 Help me decide: "${comparison?.decision.title}"
 
-      if (navigator.share) {
-        await navigator.share(shareData);
-        await navigator.clipboard.writeText(shareUrl);
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        enqueueSnackbar("Link copied to clipboard!", { variant: "success" });
-      }
-    } catch (error) {
-      console.error("Error sharing link:", error);
-      enqueueSnackbar("Failed to share the result.", { variant: "error" });
-    }
+Cast your vote: ${window.location.origin}/vote/${id}`;
+
+    navigator.clipboard.writeText(shareText);
+    enqueueSnackbar("Share link copied to clipboard!", { variant: "success" });
   };
 
   return (
@@ -129,7 +128,12 @@ export default function Decide() {
                 <div className="space-y-4">
                   <Button
                     variant="outline"
-                    className="w-full p-8 text-lg rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+                    className="w-full p-8 text-lg rounded-xl 
+                              hover:bg-blue-50 hover:border-blue-200 
+                              focus:bg-transparent focus:border-gray-200
+                              active:bg-transparent active:border-gray-200
+                              transition-all duration-300
+                              touch-none"
                     onClick={() => handleChoice("choice 1")}
                     disabled={loading}
                   >
@@ -141,7 +145,12 @@ export default function Decide() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full p-8 text-lg rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+                    className="w-full p-8 text-lg rounded-xl 
+                              hover:bg-blue-50 hover:border-blue-200 
+                              focus:bg-transparent focus:border-gray-200
+                              active:bg-transparent active:border-gray-200
+                              transition-all duration-300
+                              touch-none"
                     onClick={() => handleChoice("choice 2")}
                     disabled={loading}
                   >
@@ -165,10 +174,10 @@ export default function Decide() {
                 </p>
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                   <span className="text-gray-700 text-sm truncate">
-                    {window.location.origin}/decide/{id}
+                    {window.location.origin}/vote/{id}
                   </span>
                   <button
-                    onClick={handleSharePollLink}
+                    onClick={handleShare}
                     className="text-blue-600 hover:text-blue-700 ml-2"
                   >
                     <Share2 className="w-5 h-5" />

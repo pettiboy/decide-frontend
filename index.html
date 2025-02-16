@@ -4,9 +4,54 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="logo.png" />
-    <title>Decide</title>
 
-    <!-- Google tag (gtag.js) -->
+    <!-- Primary Meta Tags -->
+    <title>Decide - Make Better Decisions</title>
+    <meta name="title" content="Decide - Make Better Decisions" />
+    <meta
+      name="description"
+      content="Make smarter group decisions through simple head-to-head comparisons. Our intelligent ranking system helps teams reach consensus easily and fairly."
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://decide.somehow.dev/" />
+    <meta property="og:title" content="Decide - Make Better Decisions" />
+    <meta
+      property="og:description"
+      content="Make smarter group decisions through simple head-to-head comparisons. Our intelligent ranking system helps teams reach consensus easily and fairly."
+    />
+    <meta property="og:image" content="/og-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://decide.somehow.dev/" />
+    <meta property="twitter:title" content="Decide - Make Better Decisions" />
+    <meta
+      property="twitter:description"
+      content="Make smarter group decisions through simple head-to-head comparisons. Our intelligent ranking system helps teams reach consensus easily and fairly."
+    />
+    <meta property="twitter:image" content="/og-image.png" />
+
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#2563EB" />
+    <meta
+      name="keywords"
+      content="decision making, group decisions, voting system, ranking tool, team consensus, pairwise voting, decision helper"
+    />
+    <meta name="author" content="decide.somehow.dev" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Preconnect to domains -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+
+    <!-- PWA related tags -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Decide" />
+
+    <!-- Existing Google Analytics Script -->
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=G-Z5H2YZ7K1N"
@@ -18,12 +63,14 @@
           dataLayer.push(arguments);
         }
         gtag("js", new Date());
-
         gtag("config", "G-Z5H2YZ7K1N");
       }
     </script>
   </head>
   <body>
+    <noscript>
+      You need to enable JavaScript to run this decision-making app.
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

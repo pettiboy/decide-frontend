@@ -53,7 +53,7 @@ export default function MyDecisions() {
   const handleShare = async (e: React.MouseEvent, decisionId: string) => {
     e.stopPropagation();
     try {
-      const shareUrl = `${window.location.origin}/decide/${decisionId}`;
+      const shareUrl = `${window.location.origin}/vote/${decisionId}`;
       const shareData = {
         title: `Vote on "${
           decisions.find((d) => d.id === decisionId)?.title ||
@@ -161,7 +161,7 @@ export default function MyDecisions() {
                     key={decision.id}
                     className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md 
                              cursor-pointer transition-all duration-300 border border-gray-100"
-                    onClick={() => navigate(`/decide/${decision.id}`)}
+                    onClick={() => navigate(`/vote/${decision.id}`)}
                   >
                     <div className="flex justify-between items-start gap-4">
                       <div className="space-y-2">

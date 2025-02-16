@@ -1,11 +1,55 @@
+import type React from "react";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Hand, Link, ListPlus } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import {
+  BarChart3,
+  Hand,
+  LinkIcon,
+  ListPlus,
+  ArrowRight,
+  Loader2,
+} from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
+import { getNextComparison } from "@/utils/api";
 
 export default function Home() {
   const navigate = useNavigate();
+  const [code, setCode] = useState("");
+  const { enqueueSnackbar } = useSnackbar();
+  const [loading, setLoading] = useState(false);
+
+  const handleJoin = async () => {
+    const trimmedCode = code.trim();
+    if (!trimmedCode) return;
+
+    if (!/^[a-zA-Z0-9]{7}$/.test(trimmedCode)) {
+      enqueueSnackbar(
+        "Invalid decision code. Code must be 7 characters long.",
+        {
+          variant: "error",
+        }
+      );
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await getNextComparison(trimmedCode);
+      navigate(`/vote/${trimmedCode}`);
+    } catch {
+      enqueueSnackbar("Invalid decision code. Please check and try again.", {
+        variant: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -25,18 +69,76 @@ export default function Home() {
               helping you make confident decisions through an intuitive voting
               process.
             </p>
-            <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-8 py-6 rounded-full 
-                         shadow-lg hover:shadow-xl transition-all duration-300 mt-8"
-              onClick={() => navigate("/create")}
-            >
-              Make Your First Decision
-            </Button>
+
+            {/* Action Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto pt-8">
+              <Card className="border-2 border-blue-600 bg-blue-50/50">
+                <CardContent className="pt-6">
+                  <div className="text-center space-y-4">
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      Start a New Decision
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Create a new poll and invite others to vote
+                    </p>
+                    <Button
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6 rounded-xl
+                               shadow-lg hover:shadow-xl transition-all duration-300"
+                      onClick={() => navigate("/create")}
+                    >
+                      Make Your First Decision
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-center space-y-4">
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      Join Existing Decision
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Enter a decision code to participate
+                    </p>
+                    <div className="flex gap-2">
+                      <div className="flex-1 relative">
+                        <Input
+                          type="text"
+                          placeholder="Enter decision code"
+                          value={code}
+                          onChange={(e) => setCode(e.target.value)}
+                          className="py-6 text-lg pr-24"
+                          onKeyDown={(e) => e.key === "Enter" && handleJoin()}
+                        />
+                        <Button
+                          className="absolute right-2 top-1/2 -translate-y-1/2 py-4"
+                          onClick={handleJoin}
+                          disabled={!code.trim() || loading}
+                        >
+                          {loading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <span>Join</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </div>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
 
-        {/* Steps Section */}
         <div className="container mx-auto px-4 py-16">
+          <Separator className="max-w-4xl mx-auto mb-16" />
+
+          {/* Steps Section */}
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
               Four steps to clarity
@@ -58,7 +160,7 @@ export default function Home() {
                 number="3"
               />
               <StepCard
-                icon={<Link className="w-6 h-6" />}
+                icon={<LinkIcon className="w-6 h-6" />}
                 title="Share for group decisions"
                 number="4"
               />
