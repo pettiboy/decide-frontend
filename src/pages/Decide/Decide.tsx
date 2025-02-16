@@ -35,6 +35,10 @@ export default function Decide() {
       setComparison(data);
     } catch (error) {
       console.error("Error fetching next comparison:", error);
+      enqueueSnackbar("Invalid decision code. Please check and try again.", {
+        variant: "error",
+      });
+      navigate("/");
     } finally {
       setLoading(false);
     }
@@ -48,6 +52,13 @@ export default function Decide() {
     if (!comparison) return;
     try {
       setLoading(true);
+      // Remove focus and active states from all buttons
+      const buttons = document.querySelectorAll("button");
+      buttons.forEach((button) => {
+        button.blur();
+        button.classList.remove("active");
+      });
+
       await submitComparison(
         id!,
         comparison.choice1.id,
@@ -129,7 +140,12 @@ export default function Decide() {
                 <div className="space-y-4">
                   <Button
                     variant="outline"
-                    className="w-full p-8 text-lg rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+                    className="w-full p-8 text-lg rounded-xl 
+                              hover:bg-blue-50 hover:border-blue-200 
+                              focus:bg-transparent focus:border-gray-200
+                              active:bg-transparent active:border-gray-200
+                              transition-all duration-300
+                              touch-none"
                     onClick={() => handleChoice("choice 1")}
                     disabled={loading}
                   >
@@ -141,7 +157,12 @@ export default function Decide() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full p-8 text-lg rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+                    className="w-full p-8 text-lg rounded-xl 
+                              hover:bg-blue-50 hover:border-blue-200 
+                              focus:bg-transparent focus:border-gray-200
+                              active:bg-transparent active:border-gray-200
+                              transition-all duration-300
+                              touch-none"
                     onClick={() => handleChoice("choice 2")}
                     disabled={loading}
                   >

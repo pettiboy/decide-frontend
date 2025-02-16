@@ -158,28 +158,34 @@ export default function Result() {
               <h1 className="text-3xl font-bold text-gray-900">{pollName}</h1>
 
               {/* Decision ID and Share Button */}
-              <div className="flex items-center justify-center gap-3">
-                <div className="bg-white px-4 py-2 rounded-lg border border-gray-200 flex items-center gap-2">
-                  <code className="text-gray-700 font-mono text-lg">{id}</code>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 rounded-full hover:bg-gray-50"
-                    onClick={handleCopyId}
-                  >
-                    <Copy className="w-4 h-4 text-gray-500" />
-                    <span className="sr-only">Copy poll ID</span>
-                  </Button>
+              <div className="flex items-center justify-center">
+                <div className="relative flex items-center bg-gray-50/80 px-6 py-2 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
+                  <div className="flex items-center gap-3">
+                    <code className="text-gray-700 font-mono text-lg tracking-wide bg-white px-3 py-1 rounded-md border border-gray-100">
+                      {id}
+                    </code>
+                  </div>
+                  <div className="flex items-center gap-2 ml-4 pl-4 border-l border-gray-200">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-full hover:bg-white/80 transition-colors"
+                      onClick={handleCopyId}
+                    >
+                      <Copy className="w-4 h-4 text-gray-500" />
+                      <span className="sr-only">Copy poll ID</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-full hover:bg-blue-50 transition-colors"
+                      onClick={handleShare}
+                    >
+                      <Share2 className="w-4 h-4 text-blue-600" />
+                      <span className="sr-only">Share results</span>
+                    </Button>
+                  </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-10 w-10 rounded-full hover:bg-blue-50"
-                  onClick={handleShare}
-                >
-                  <Share2 className="w-5 h-5 text-blue-600" />
-                  <span className="sr-only">Share results</span>
-                </Button>
               </div>
 
               {/* Animated Voters Count as chip */}
@@ -224,9 +230,6 @@ export default function Result() {
                 <>
                   {/* Results List */}
                   <div className="space-y-4">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                      Final Rankings
-                    </h2>
                     {rankedChoices.map((item) => (
                       <div
                         key={item.id}
