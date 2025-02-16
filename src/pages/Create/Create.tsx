@@ -51,7 +51,7 @@ export default function Create() {
     setLoading(true);
     try {
       const data = await createDecision(title, choices, 1);
-      navigate(`/decide/${data.decisionId}`);
+      navigate(`/vote/${data.decisionId}`);
     } catch (error) {
       console.log(error);
       enqueueSnackbar("Failed to create decision!", { variant: "error" });

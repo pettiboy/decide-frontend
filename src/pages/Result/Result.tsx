@@ -2,10 +2,18 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import ResultImage from "@/components/ResultImage";
 import { Button } from "@/components/ui/button";
-import { getResults, getVoterCount } from "@/utils/api";
+import { getResults, getVoterCount, getNextComparison } from "@/utils/api";
 import html2canvas from "html2canvas";
 
-import { Loader2, RotateCw, Share2, Trophy } from "lucide-react";
+import {
+  Loader2,
+  RotateCw,
+  Share2,
+  Users,
+  Copy,
+  MessageSquare,
+  Plus,
+} from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -21,16 +29,18 @@ export default function Result() {
   >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasVoted, setHasVoted] = useState(true);
 
   const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchResults = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const [resultData, voterData] = await Promise.all([
+        const [resultData, voterData, hasVotedStatus] = await Promise.all([
           getResults(id!),
           getVoterCount(id!),
+          checkIfUserHasVoted(),
         ]);
 
         if (
@@ -43,6 +53,7 @@ export default function Result() {
           setRankedChoices(resultData.rankedChoices);
           setPollName(resultData.decision.title || "Untitled Decision");
           setVoterCount(voterData.numberOfVoters);
+          setHasVoted(hasVotedStatus);
         }
       } catch (error) {
         setError("Failed to fetch results. Please try again.");
@@ -51,7 +62,7 @@ export default function Result() {
         setLoading(false);
       }
     };
-    fetchResults();
+    fetchData();
   }, [id]);
 
   const handleRestart = () => {
@@ -80,7 +91,7 @@ export default function Result() {
       const file = new File([blob], "result.png", { type: "image/png" });
       resultRef.current.style.display = "none";
 
-      const shareUrl = `${window.location.origin}/decide/${id}`;
+      const shareUrl = `${window.location.origin}/vote/${id}`;
       const shareData = {
         title: `Results: ${pollName}`,
         text: `Check out the results of "${pollName}" on Decide! ${voterCount} ${
@@ -117,38 +128,105 @@ export default function Result() {
     }
   };
 
+  const handleCopyId = async () => {
+    try {
+      await navigator.clipboard.writeText(id || "");
+      enqueueSnackbar("ID copied to clipboard!", { variant: "success" });
+    } catch {
+      enqueueSnackbar("Failed to copy ID", { variant: "error" });
+    }
+  };
+
+  const checkIfUserHasVoted = async () => {
+    try {
+      const data = await getNextComparison(id!);
+      return !data || data.comparisonsRemaining === 0;
+    } catch (error) {
+      console.error("Error checking vote status:", error);
+      return true; // Assume voted on error
+    }
+  };
+
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <main className="flex-grow bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-2xl mx-auto">
             {/* Header Section */}
             <div className="text-center space-y-4 mb-12">
-              <div className="inline-block p-4 bg-blue-50 rounded-full mb-4">
-                <Trophy className="w-12 h-12 text-blue-600" />
+              <h1 className="text-3xl font-bold text-gray-900">{pollName}</h1>
+
+              {/* Decision ID and Share Button */}
+              <div className="flex items-center justify-center gap-3">
+                <div className="bg-white px-4 py-2 rounded-lg border border-gray-200 flex items-center gap-2">
+                  <code className="text-gray-700 font-mono text-lg">{id}</code>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full hover:bg-gray-50"
+                    onClick={handleCopyId}
+                  >
+                    <Copy className="w-4 h-4 text-gray-500" />
+                    <span className="sr-only">Copy poll ID</span>
+                  </Button>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 rounded-full hover:bg-blue-50"
+                  onClick={handleShare}
+                >
+                  <Share2 className="w-5 h-5 text-blue-600" />
+                  <span className="sr-only">Share results</span>
+                </Button>
               </div>
-              <h1 className="text-4xl font-bold text-gray-900">{pollName}</h1>
-              <div className="space-y-1">
-                <p className="text-sm text-gray-500">
-                  {voterCount} {voterCount === 1 ? "voter" : "voters"}{" "}
-                  participated
-                </p>
+
+              {/* Animated Voters Count as chip */}
+              <div className="inline-flex items-center gap-2">
+                <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full px-3 py-1">
+                  <Users className="w-5 h-5 text-blue-600" />
+                  <span className="text-sm font-medium text-gray-600">
+                    {voterCount} {voterCount === 1 ? "voter" : "voters"}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    {/* Subtle pulsing red dot */}
+                    <div className="relative flex items-center justify-center w-2 h-2">
+                      <span className="absolute w-2 h-2 bg-red-500/80 rounded-full animate-pulse"></span>
+                    </div>
+                    <span className="text-xs text-red-500 font-semibold">
+                      LIVE
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Main Content */}
             <div className="space-y-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
               {loading ? (
-                <div className="flex justify-center items-center py-12">
-                  <Loader2 className="animate-spin w-8 h-8 text-blue-600" />
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Loader2 className="animate-spin w-8 h-8 text-blue-600 mb-4" />
+                  <p className="text-gray-600">Loading results...</p>
                 </div>
               ) : error ? (
-                <p className="text-center text-red-500 py-8">{error}</p>
+                <div className="text-center py-8">
+                  <p className="text-red-500 mb-4">{error}</p>
+                  <Button
+                    variant="outline"
+                    onClick={() => window.location.reload()}
+                  >
+                    <RotateCw className="w-4 h-4 mr-2" />
+                    Retry
+                  </Button>
+                </div>
               ) : (
                 <>
                   {/* Results List */}
                   <div className="space-y-4">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                      Final Rankings
+                    </h2>
                     {rankedChoices.map((item) => (
                       <div
                         key={item.id}
@@ -171,14 +249,25 @@ export default function Result() {
 
                   {/* Action Buttons */}
                   <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                    <Button
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-6 rounded-xl
-                                shadow-lg hover:shadow-xl transition-all duration-300"
-                      onClick={handleShare}
-                    >
-                      <Share2 className="w-5 h-5 mr-2" />
-                      Share With Image
-                    </Button>
+                    {!hasVoted ? (
+                      <Button
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-6 rounded-xl
+                                  shadow-lg hover:shadow-xl transition-all duration-300"
+                        onClick={() => navigate(`/vote/${id}`)}
+                      >
+                        <Users className="w-5 h-5 mr-2" />
+                        Vote on this Poll
+                      </Button>
+                    ) : (
+                      <Button
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-6 rounded-xl
+                                  shadow-lg hover:shadow-xl transition-all duration-300"
+                        onClick={handleShare}
+                      >
+                        <Share2 className="w-5 h-5 mr-2" />
+                        Share Results
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       className="flex-1 py-6 rounded-xl hover:bg-blue-50"
@@ -189,22 +278,68 @@ export default function Result() {
                     </Button>
                   </div>
 
-                  {/* Share Section */}
-                  <div className="pt-8 border-t border-gray-100">
-                    <p className="text-gray-600 text-center mb-4">
-                      Share this with others and let them decide too!
-                    </p>
-                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                      <span className="text-gray-700 text-sm truncate">
-                        {window.location.origin}/decide/{id}
-                      </span>
-                      <button
-                        onClick={handleShare}
-                        className="text-blue-600 hover:text-blue-700 ml-2"
-                      >
-                        <Share2 className="w-5 h-5" />
-                      </button>
-                    </div>
+                  {/* Next Steps */}
+                  <div className="mt-8 p-6 bg-blue-50/50 rounded-xl border border-blue-100">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      What's Next?
+                    </h3>
+                    <ul className="space-y-3">
+                      {!hasVoted ? (
+                        <li className="flex items-start gap-3">
+                          <div className="p-1.5 bg-blue-100 rounded-full mt-0.5">
+                            <Users className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="text-gray-900 font-medium">
+                              Cast your vote
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              More votes make the rankings more accurate
+                            </p>
+                          </div>
+                        </li>
+                      ) : (
+                        <li className="flex items-start gap-3">
+                          <div className="p-1.5 bg-blue-100 rounded-full mt-0.5">
+                            <Share2 className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="text-gray-900 font-medium">
+                              Share with others
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Get more perspectives on this decision
+                            </p>
+                          </div>
+                        </li>
+                      )}
+                      <li className="flex items-start gap-3">
+                        <div className="p-1.5 bg-blue-100 rounded-full mt-0.5">
+                          <MessageSquare className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-gray-900 font-medium">
+                            Discuss the results
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            Use these rankings to guide your final decision
+                          </p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <div className="p-1.5 bg-blue-100 rounded-full mt-0.5">
+                          <Plus className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-gray-900 font-medium">
+                            Create another poll
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            Have more decisions to make? Start a new poll
+                          </p>
+                        </div>
+                      </li>
+                    </ul>
                   </div>
                 </>
               )}

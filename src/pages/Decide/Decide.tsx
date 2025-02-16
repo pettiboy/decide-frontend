@@ -64,7 +64,7 @@ export default function Decide() {
 
   const handleSharePollLink = async () => {
     try {
-      const shareUrl = `${window.location.origin}/decide/${id}`;
+      const shareUrl = `${window.location.origin}/vote/${id}`;
       const shareData = {
         title: "Decide - Vote on your Choices",
         text: "Vote on my poll on Decide!",
@@ -165,7 +165,7 @@ export default function Decide() {
                 </p>
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                   <span className="text-gray-700 text-sm truncate">
-                    {window.location.origin}/decide/{id}
+                    {window.location.origin}/vote/{id}
                   </span>
                   <button
                     onClick={handleSharePollLink}

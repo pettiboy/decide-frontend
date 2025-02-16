@@ -28,7 +28,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/decide/:id",
+    path: "/vote/:id",
     element: (
       <ProtectedRoute>
         <Decide />
