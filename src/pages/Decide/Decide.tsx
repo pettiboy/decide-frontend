@@ -2,7 +2,6 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { getNextComparison, submitComparison } from "@/utils/api";
 import { Loader2, InfoIcon, Share2 } from "lucide-react";
-import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -10,6 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useSnackbar } from "notistack";
 
 export default function Decide() {
   const { id } = useParams();
@@ -22,6 +22,7 @@ export default function Decide() {
     totalComparisons: number;
     decision: { title: string };
   } | null>(null);
+  const { enqueueSnackbar } = useSnackbar();
 
   const fetchNextComparison = async () => {
     try {
@@ -73,26 +74,13 @@ export default function Decide() {
     }
   };
 
-  const handleSharePollLink = async () => {
-    try {
-      const shareUrl = `${window.location.origin}/vote/${id}`;
-      const shareData = {
-        title: "Decide - Vote on your Choices",
-        text: "Vote on my poll on Decide!",
-        url: shareUrl,
-      };
+  const handleShare = () => {
+    const shareText = `🤔 Help me decide: "${comparison?.decision.title}"
 
-      if (navigator.share) {
-        await navigator.share(shareData);
-        await navigator.clipboard.writeText(shareUrl);
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        enqueueSnackbar("Link copied to clipboard!", { variant: "success" });
-      }
-    } catch (error) {
-      console.error("Error sharing link:", error);
-      enqueueSnackbar("Failed to share the result.", { variant: "error" });
-    }
+Cast your vote: ${window.location.origin}/vote/${id}`;
+
+    navigator.clipboard.writeText(shareText);
+    enqueueSnackbar("Share link copied to clipboard!", { variant: "success" });
   };
 
   return (
@@ -189,7 +177,7 @@ export default function Decide() {
                     {window.location.origin}/vote/{id}
                   </span>
                   <button
-                    onClick={handleSharePollLink}
+                    onClick={handleShare}
                     className="text-blue-600 hover:text-blue-700 ml-2"
                   >
                     <Share2 className="w-5 h-5" />

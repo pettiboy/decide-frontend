@@ -10,12 +10,11 @@ interface RankedChoice {
 
 interface ResultImageProps {
   pollName: string;
-  totalVotesCount: number;
   rankedChoices: RankedChoice[];
 }
 
 const ResultImage = forwardRef<HTMLDivElement, ResultImageProps>(
-  ({ pollName, totalVotesCount, rankedChoices }, ref) => {
+  ({ pollName, rankedChoices }, ref) => {
     // Truncate long text
     const truncateText = (text: string, maxLength: number) => {
       return text.length > maxLength
@@ -92,10 +91,6 @@ const ResultImage = forwardRef<HTMLDivElement, ResultImageProps>(
             >
               {truncateText(pollName, 40)}
             </h1>
-            <p style={{ fontSize: "24px", color: "#6B7280" }}>
-              {totalVotesCount} {totalVotesCount === 1 ? "voter" : "voters"}{" "}
-              participated
-            </p>
           </div>
 
           {/* Results List */}

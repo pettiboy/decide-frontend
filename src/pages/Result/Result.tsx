@@ -71,6 +71,13 @@ export default function Result() {
 
   const handleShare = async () => {
     if (!resultRef.current) return;
+
+    const shareText = `🤔 Help me decide: "${pollName}"
+
+📊 ${voterCount} people have voted so far!
+
+Cast your vote: ${window.location.origin}/vote/${id}`;
+
     try {
       resultRef.current.style.display = "block";
       const canvas = await html2canvas(resultRef.current, {
@@ -79,6 +86,7 @@ export default function Result() {
         height: 1080,
         allowTaint: true,
       });
+
       const blob: BlobPart = await new Promise((resolve, reject) =>
         canvas.toBlob((blob: Blob | null) => {
           if (blob) {
@@ -88,16 +96,14 @@ export default function Result() {
           }
         }, "image/png")
       );
+
       const file = new File([blob], "result.png", { type: "image/png" });
       resultRef.current.style.display = "none";
 
-      const shareUrl = `${window.location.origin}/vote/${id}`;
       const shareData = {
-        title: `Results: ${pollName}`,
-        text: `Check out the results of "${pollName}" on Decide! ${voterCount} ${
-          voterCount === 1 ? "person has" : "people have"
-        } voted.`,
-        url: shareUrl,
+        title: `Help me decide: ${pollName}`,
+        text: shareText,
+        url: `${window.location.origin}/vote/${id}`,
         files: [file],
       };
 
@@ -110,27 +116,26 @@ export default function Result() {
         }
       }
 
-      // Modern fallback using Clipboard API
-      const clipboardItem = new ClipboardItem({
-        "text/plain": new Blob([shareUrl], { type: "text/plain" }),
+      // Fallback to copying text if image sharing fails
+      await navigator.clipboard.writeText(shareText);
+      enqueueSnackbar("Share link copied to clipboard!", {
+        variant: "success",
       });
-      try {
-        await navigator.clipboard.write([clipboardItem]);
-        enqueueSnackbar("Link copied to clipboard!", { variant: "success" });
-      } catch {
-        enqueueSnackbar("Failed to copy link. Please try again.", {
-          variant: "error",
-        });
-      }
     } catch (error) {
-      console.error("Error sharing link:", error);
-      enqueueSnackbar("Failed to share the result.", { variant: "error" });
+      console.error("Error sharing:", error);
+      // Final fallback - just copy the text
+      await navigator.clipboard.writeText(shareText);
+      enqueueSnackbar("Share link copied to clipboard!", {
+        variant: "success",
+      });
     }
   };
 
   const handleCopyId = async () => {
     try {
-      await navigator.clipboard.writeText(id || "");
+      await navigator.clipboard.writeText(
+        id ? `${window.location.origin}/vote/${id}` : ""
+      );
       enqueueSnackbar("ID copied to clipboard!", { variant: "success" });
     } catch {
       enqueueSnackbar("Failed to copy ID", { variant: "error" });
@@ -355,7 +360,6 @@ export default function Result() {
         <ResultImage
           ref={resultRef}
           pollName={pollName}
-          totalVotesCount={voterCount}
           rankedChoices={rankedChoices}
         />
       </div>
