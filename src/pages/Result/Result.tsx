@@ -241,14 +241,14 @@ Cast your vote: ${window.location.origin}/vote/${id}`;
                         className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
                       >
                         <div className="flex items-center gap-4">
-                          <span className="text-2xl font-bold text-blue-600">
+                          <span className="text-2xl font-bold text-blue-600 min-w-[48px]">
                             #{item.rank}
                           </span>
                           <span className="text-lg text-gray-900">
                             {item.text}
                           </span>
                         </div>
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-gray-500 min-w-[100px] text-right">
                           Score: {item.score.toFixed(2)}
                         </span>
                       </div>

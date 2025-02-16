@@ -1,4 +1,3 @@
-import { Trophy } from "lucide-react";
 import { forwardRef } from "react";
 
 interface RankedChoice {
@@ -21,6 +20,13 @@ const ResultImage = forwardRef<HTMLDivElement, ResultImageProps>(
         ? text.substring(0, maxLength) + "..."
         : text;
     };
+
+    const NUMBER_OF_CHOICES_TO_DISPLAY = 4;
+    const displayedChoices = rankedChoices.slice(
+      0,
+      NUMBER_OF_CHOICES_TO_DISPLAY
+    );
+    const remainingCount = rankedChoices.length - NUMBER_OF_CHOICES_TO_DISPLAY;
 
     return (
       <div
@@ -66,19 +72,27 @@ const ResultImage = forwardRef<HTMLDivElement, ResultImageProps>(
           <div style={{ textAlign: "center", marginBottom: "40px" }}>
             <div
               style={{
-                background: "#EEF2FF",
-                width: "80px",
-                height: "80px",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                background: "#F9FAFB",
+                padding: "12px 24px",
+                borderRadius: "16px",
+                border: "1px solid rgba(0, 0, 0, 0.1)",
+                display: "inline-block",
                 margin: "0 auto 24px",
               }}
             >
-              <Trophy
-                style={{ width: "40px", height: "40px", color: "#4F46E5" }}
-              />
+              <code
+                style={{
+                  fontFamily: "monospace",
+                  fontSize: "24px",
+                  color: "#374151",
+                  background: "white",
+                  padding: "8px 16px",
+                  borderRadius: "8px",
+                  border: "1px solid rgba(0, 0, 0, 0.05)",
+                }}
+              >
+                {window.location.pathname.split("/").pop()}
+              </code>
             </div>
             <h1
               style={{
@@ -102,7 +116,7 @@ const ResultImage = forwardRef<HTMLDivElement, ResultImageProps>(
               gap: "20px",
             }}
           >
-            {rankedChoices.map((item) => (
+            {displayedChoices.map((item) => (
               <div
                 key={item.id}
                 style={{
@@ -148,6 +162,20 @@ const ResultImage = forwardRef<HTMLDivElement, ResultImageProps>(
                 </div>
               </div>
             ))}
+            {remainingCount > 0 && (
+              <div
+                style={{
+                  background: "#F9FAFB",
+                  padding: "24px",
+                  borderRadius: "12px",
+                  textAlign: "center",
+                  color: "#6B7280",
+                  fontSize: "20px",
+                }}
+              >
+                + {remainingCount} other options
+              </div>
+            )}
           </div>
 
           {/* Footer */}
