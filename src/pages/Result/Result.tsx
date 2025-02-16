@@ -4,6 +4,12 @@ import ResultImage from "@/components/ResultImage";
 import { Button } from "@/components/ui/button";
 import { getResults, getVoterCount, getNextComparison } from "@/utils/api";
 import html2canvas from "html2canvas";
+import { HelpCircle } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 import {
   Loader2,
@@ -233,6 +239,43 @@ Cast your vote: ${window.location.origin}/vote/${id}`;
                 </div>
               ) : (
                 <>
+                  <div className="border-b border-gray-200 pb-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h2 className="text-xl font-semibold text-gray-900">
+                        Collective Leaderboard
+                      </h2>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button className="inline-flex items-center text-gray-400 hover:text-gray-600">
+                            <HelpCircle className="w-4 h-4" />
+                            <span className="sr-only">
+                              Learn more about ranking
+                            </span>
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80">
+                          <div className="space-y-2">
+                            <h4 className="font-medium">
+                              How These Rankings Work
+                            </h4>
+                            <p className="text-sm text-gray-600">
+                              Each option's score comes from head-to-head
+                              comparisons made by voters. The more often an
+                              option is preferred, the higher it ranks. Every
+                              vote helps make these rankings more accurate.
+                            </p>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <p className="text-gray-600 text-sm">
+                      Based on {voterCount}{" "}
+                      {voterCount === 1
+                        ? "person's choices"
+                        : "people's choices"}
+                    </p>
+                  </div>
+
                   {/* Results List */}
                   <div className="space-y-4">
                     {rankedChoices.map((item) => (
@@ -302,7 +345,7 @@ Cast your vote: ${window.location.origin}/vote/${id}`;
                               Cast your vote
                             </p>
                             <p className="text-sm text-gray-600">
-                              More votes make the rankings more accurate
+                              Each vote helps build a more accurate ranking
                             </p>
                           </div>
                         </li>
@@ -316,7 +359,7 @@ Cast your vote: ${window.location.origin}/vote/${id}`;
                               Share with others
                             </p>
                             <p className="text-sm text-gray-600">
-                              Get more perspectives on this decision
+                              More votes = more accurate results
                             </p>
                           </div>
                         </li>
