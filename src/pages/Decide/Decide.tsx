@@ -1,10 +1,15 @@
-import Navbar from "@/components/Navbar"; // Importing Navbar Component
+import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { getNextComparison, submitComparison } from "@/utils/api";
-import { Loader2 } from "lucide-react";
+import { Loader2, InfoIcon, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useSnackbar } from "notistack";
 
 export default function Decide() {
   const { id } = useParams();
@@ -15,16 +20,15 @@ export default function Decide() {
     choice2: { id: number; text: string };
     comparisonsRemaining: number;
     totalComparisons: number;
+    decision: { title: string };
   } | null>(null);
-
-  useEffect(() => {
-    fetchNextComparison();
-  }, []);
+  const { enqueueSnackbar } = useSnackbar();
 
   const fetchNextComparison = async () => {
     try {
       setLoading(true);
       const data = await getNextComparison(id!);
+
       if (!data || data.comparisonsRemaining === 0) {
         navigate(`/result/${id}`);
         return;
@@ -32,15 +36,30 @@ export default function Decide() {
       setComparison(data);
     } catch (error) {
       console.error("Error fetching next comparison:", error);
+      enqueueSnackbar("Invalid decision code. Please check and try again.", {
+        variant: "error",
+      });
+      navigate("/");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchNextComparison();
+  }, [id, navigate]);
+
   const handleChoice = async (chosenOption: string) => {
     if (!comparison) return;
     try {
       setLoading(true);
+      // Remove focus and active states from all buttons
+      const buttons = document.querySelectorAll("button");
+      buttons.forEach((button) => {
+        button.blur();
+        button.classList.remove("active");
+      });
+
       await submitComparison(
         id!,
         comparison.choice1.id,
@@ -55,9 +74,17 @@ export default function Decide() {
     }
   };
 
+  const handleShare = () => {
+    const shareText = `🤔 Help me decide: "${comparison?.decision.title}"
+
+Cast your vote: ${window.location.origin}/vote/${id}`;
+
+    navigator.clipboard.writeText(shareText);
+    enqueueSnackbar("Share link copied to clipboard!", { variant: "success" });
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navbar Component with Progress */}
+    <>
       <Navbar
         progress={
           comparison
@@ -71,55 +98,98 @@ export default function Decide() {
             : undefined
         }
       />
-
-      {/* Main Content */}
-      <div className="flex items-center justify-center px-4 min-h-[calc(100vh-64px)]">
-        <Card className="w-full max-w-xl p-4 sm:p-6 shadow-xl rounded-3xl bg-white">
-          <CardContent className="flex flex-col space-y-6">
-            {/* Heading Section */}
-            <div className="text-center">
-              <h1 className="text-2xl font-bold">This or That?</h1>
-              <p className="text-gray-500 text-md">
-                Choose the option you prefer. Your choices will help rank all
-                options.
-              </p>
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="container mx-auto px-4 py-16">
+          <div className="max-w-2xl mx-auto">
+            {/* Header Section */}
+            <div className="text-center space-y-4 mb-12">
+              {comparison?.decision.title && (
+                <h1 className="text-4xl font-bold text-gray-900">
+                  {comparison.decision.title}
+                </h1>
+              )}
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
+                This or <span className="text-blue-600">That?</span>
+                <Popover>
+                  <PopoverTrigger>
+                    <InfoIcon className="w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                  </PopoverTrigger>
+                  <PopoverContent className="text-sm text-gray-600 w-[260px]">
+                    Choose the option you prefer. Your choices will help rank
+                    all options.
+                  </PopoverContent>
+                </Popover>
+              </h2>
             </div>
 
-            {comparison ? (
-              <>
+            {/* Main Content */}
+            <div className="space-y-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+              {comparison ? (
                 <div className="space-y-4">
                   <Button
                     variant="outline"
-                    className="text-lg py-10 rounded-xl w-full"
+                    className="w-full p-8 text-lg rounded-xl 
+                              hover:bg-blue-50 hover:border-blue-200 
+                              focus:bg-transparent focus:border-gray-200
+                              active:bg-transparent active:border-gray-200
+                              transition-all duration-300
+                              touch-none"
                     onClick={() => handleChoice("choice 1")}
+                    onMouseDown={(e) => e.preventDefault()}
                     disabled={loading}
                   >
                     {loading ? (
                       <Loader2 className="animate-spin w-6 h-6" />
                     ) : (
-                      comparison.choice1.text
+                      comparison.choice1?.text
                     )}
                   </Button>
                   <Button
                     variant="outline"
-                    className="text-lg py-10 rounded-xl w-full"
+                    className="w-full p-8 text-lg rounded-xl 
+                              hover:bg-blue-50 hover:border-blue-200 
+                              focus:bg-transparent focus:border-gray-200
+                              active:bg-transparent active:border-gray-200
+                              transition-all duration-300
+                              touch-none"
                     onClick={() => handleChoice("choice 2")}
+                    onMouseDown={(e) => e.preventDefault()}
                     disabled={loading}
                   >
                     {loading ? (
                       <Loader2 className="animate-spin w-6 h-6" />
                     ) : (
-                      comparison.choice2.text
+                      comparison.choice2?.text
                     )}
                   </Button>
                 </div>
-              </>
-            ) : (
-              <div className="text-center text-gray-600">Loading...</div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Loader2 className="animate-spin w-8 h-8 text-blue-600 mx-auto" />
+                </div>
+              )}
+
+              {/* Share Section */}
+              <div className="pt-8 border-t border-gray-100">
+                <p className="text-gray-600 text-center mb-4">
+                  Share this with others and let them decide too!
+                </p>
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <span className="text-gray-700 text-sm truncate">
+                    {window.location.origin}/vote/{id}
+                  </span>
+                  <button
+                    onClick={handleShare}
+                    className="text-blue-600 hover:text-blue-700 ml-2"
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </>
   );
 }
