@@ -135,6 +135,7 @@ Cast your vote: ${window.location.origin}/vote/${id}`;
                               transition-all duration-300
                               touch-none"
                     onClick={() => handleChoice("choice 1")}
+                    onMouseDown={(e) => e.preventDefault()}
                     disabled={loading}
                   >
                     {loading ? (
@@ -152,6 +153,7 @@ Cast your vote: ${window.location.origin}/vote/${id}`;
                               transition-all duration-300
                               touch-none"
                     onClick={() => handleChoice("choice 2")}
+                    onMouseDown={(e) => e.preventDefault()}
                     disabled={loading}
                   >
                     {loading ? (
