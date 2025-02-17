@@ -22,6 +22,8 @@ export default function Decide() {
     totalComparisons: number;
     decision: { title: string };
   } | null>(null);
+  const [comparisonKey, setComparisonKey] = useState(0);
+
   const { enqueueSnackbar } = useSnackbar();
 
   const fetchNextComparison = async () => {
@@ -34,6 +36,7 @@ export default function Decide() {
         return;
       }
       setComparison(data);
+      setComparisonKey((prevKey) => prevKey + 1);
     } catch (error) {
       console.error("Error fetching next comparison:", error);
       enqueueSnackbar("Invalid decision code. Please check and try again.", {
@@ -125,7 +128,7 @@ Cast your vote: ${window.location.origin}/vote/${id}`;
             {/* Main Content */}
             <div className="space-y-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
               {comparison ? (
-                <div className="space-y-4">
+                <div key={comparisonKey} className="space-y-4">
                   <Button
                     variant="outline"
                     className="w-full p-8 text-lg rounded-xl 
